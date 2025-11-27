@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бөлшектер мен аралас сандарды қосу және азайту</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2575fc;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 10px 10px 0 0;
+            margin-right: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+        
+        .tab.active {
+            background-color: #2575fc;
+            color: white;
+        }
+        
+        .tab:hover:not(.active) {
+            background-color: #d0e1ff;
+        }
+        
+        .content {
+            display: none;
+            padding: 25px;
+            border-radius: 0 0 15px 15px;
+            background-color: white;
+            min-height: 400px;
+        }
+        
+        .content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Жаңа элементтер */
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .score-item {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .reward-system {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .stars {
+            font-size: 2rem;
+            margin: 10px 0;
+        }
+
+        .star {
+            color: #ffd700;
+            margin: 0 5px;
+            opacity: 0.3;
+            transition: all 0.3s;
+        }
+
+        .star.active {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        .game-message {
+            text-align: center;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 2px solid #4caf50;
+        }
+
+        .challenge {
+            background-color: #fff3e0;
+            color: #ef6c00;
+            border: 2px solid #ff9800;
+        }
+        
+        .math-expression {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            gap: 15px;
+        }
+        
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 5px;
+        }
+        
+        .numerator {
+            border-bottom: 2px solid black;
+            padding: 0 10px;
+        }
+        
+        .denominator {
+            padding: 0 10px;
+        }
+        
+        .mixed-number {
+            display: inline-flex;
+            align-items: center;
+            margin: 0 5px;
+        }
+        
+        .operation {
+            font-size: 1.8rem;
+            margin: 0 10px;
+        }
+        
+        .level {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 15px;
+            background-color: #f0f7ff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .level h3 {
+            color: #2575fc;
+            margin-top: 0;
+            border-bottom: 2px solid #2575fc;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+        
+        .problem {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s;
+        }
+
+        .problem.correct {
+            background-color: #f1f8e9;
+            border-left: 5px solid #4caf50;
+        }
+
+        .problem.incorrect {
+            background-color: #ffebee;
+            border-left: 5px solid #f44336;
+        }
+        
+        .problem-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .problem-number {
+            background-color: #2575fc;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .problem-content {
+            flex: 1;
+        }
+        
+        .problem-text {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        
+        .answer-section {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .mixed-input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .mixed-input {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .fraction-input {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .fraction-part {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .fraction-line {
+            width: 100%;
+            height: 2px;
+            background-color: #333;
+            margin: 2px 0;
+        }
+        
+        .fraction-input input {
+            width: 60px;
+            text-align: center;
+            padding: 8px;
+            border: 2px solid #2575fc;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .fraction-input input:focus {
+            border-color: #ff5722;
+            box-shadow: 0 0 8px rgba(255, 87, 34, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .whole-input {
+            width: 60px;
+            text-align: center;
+            padding: 8px;
+            border: 2px solid #2575fc;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .whole-input:focus {
+            border-color: #ff5722;
+            box-shadow: 0 0 8px rgba(255, 87, 34, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .equals {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2575fc;
+        }
+        
+        button {
+            background-color: #2575fc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background-color: #1a5fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .game-button {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            font-size: 1.1rem;
+            padding: 15px 30px;
+        }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none;
+            text-align: left;
+            animation: slideIn 0.5s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .praise {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffeaa7;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: none;
+            animation: pop 0.5s;
+        }
+        
+        @keyframes pop {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .real-life {
+            background-color: #e8f5e9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+        }
+        
+        .instructions {
+            background-color: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+        
+        .instructions h3 {
+            color: #1565c0;
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        .explanation {
+            background-color: #fff3e0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .explanation h3 {
+            color: #e65100;
+            margin-top: 0;
+        }
+        
+        .example {
+            background-color: #f3e5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .completion-message {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #4caf50, #8bc34a);
+            color: white;
+            border-radius: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            border-radius: 50%;
+            animation: confetti-fall 3s linear forwards;
+            z-index: 1000;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .tab {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .problem-text {
+                font-size: 1.1rem;
+            }
+            
+            .fraction-input input {
+                width: 50px;
+                padding: 6px;
+            }
+            
+            .whole-input {
+                width: 50px;
+                padding: 6px;
+            }
+            
+            .math-expression {
+                font-size: 1.4rem;
+            }
+            
+            .problem-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .problem-number {
+                margin-bottom: 10px;
+            }
+            
+            .mixed-input-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .score-board {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="game-header">
+            <h1>🎯 Бөлшектер мен аралас сандарды қосу және азайту 🎯</h1>
+            <div class="score-board">
+                <div class="score-item" id="score">Ұпай: 0</div>
+                <div class="score-item" id="level">Деңгей: 1</div>
+                <div class="score-item" id="streak">Үздік серия: 0</div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="reward-system">
+                <div class="stars" id="stars">
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="openTab('theory')">📚 Теория</button>
+            <button class="tab" onclick="openTab('level1')">🎮 1-деңгей</button>
+            <button class="tab" onclick="openTab('level2')">🎯 2-деңгей</button>
+            <button class="tab" onclick="openTab('level3')">🏆 3-деңгей</button>
+        </div>
+        
+        <div id="theory" class="content active">
+            <h2>Бөлшектерді қосу және азайту</h2>
+            
+            <div class="instructions">
+                <h3>🎓 Нұсқаулық:</h3>
+                <p>Жауаптарды бөлшек түрінде енгізіңіз. Мысалы:</p>
+                <div class="math-expression">
+                    <span>Жай бөлшек:</span>
+                    <div class="fraction">
+                        <div class="numerator">3</div>
+                        <div class="denominator">4</div>
+                    </div>
+                    <span>Аралас сан:</span>
+                    <div class="mixed-number">
+                        <span>1</span>
+                        <div class="fraction">
+                            <div class="numerator">1</div>
+                            <div class="denominator">2</div>
+                        </div>
+                    </div>
+                    <span>Бүтін сан:</span>
+                    <div class="fraction">
+                        <div class="numerator">5</div>
+                        <div class="denominator">1</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-message challenge">
+                <strong>🎯 Миссия:</strong> Барлық 15 есепті шешіп, 5 жұлдызды жинаңыз!
+            </div>
+            
+            <div class="explanation">
+                <h3>📖 Бөлшектерді қосу және азайту ережелері:</h3>
+                <ol>
+                    <li>✅ Бөлшектерді қосқанда немесе азайтқанда, бөлімдері бірдей болуы керек</li>
+                    <li>✅ Егер бөлімдері әртүрлі болса, алдымен оларды ортақ бөлімге келтіреміз</li>
+                    <li>✅ Алымдарын қосамыз (немесе азайтамыз), ал бөлімін өзгеріссіз қалдырамыз</li>
+                    <li>✅ Алынған нәтижені қысқартып, аралас сан түрінде жазамыз</li>
+                </ol>
+            </div>
+            
+            <div class="examples">
+                <h3>📝 Мысалдар:</h3>
+                
+                <div class="example">
+                    <p><strong>1-мысал:</strong></p>
+                    <div class="math-expression">
+                        <div class="fraction">
+                            <div class="numerator">1</div>
+                            <div class="denominator">4</div>
+                        </div>
+                        <div class="operation">+</div>
+                        <div class="fraction">
+                            <div class="numerator">2</div>
+                            <div class="denominator">4</div>
+                        </div>
+                        <div class="operation">=</div>
+                        <div class="fraction">
+                            <div class="numerator">3</div>
+                            <div class="denominator">4</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="example">
+                    <p><strong>2-мысал:</strong></p>
+                    <div class="math-expression">
+                        <div class="fraction">
+                            <div class="numerator">3</div>
+                            <div class="denominator">5</div>
+                        </div>
+                        <div class="operation">-</div>
+                        <div class="fraction">
+                            <div class="numerator">1</div>
+                            <div class="denominator">5</div>
+                        </div>
+                        <div class="operation">=</div>
+                        <div class="fraction">
+                            <div class="numerator">2</div>
+                            <div class="denominator">5</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="example">
+                    <p><strong>3-мысал:</strong></p>
+                    <div class="math-expression">
+                        <div class="fraction">
+                            <div class="numerator">1</div>
+                            <div class="denominator">2</div>
+                        </div>
+                        <div class="operation">+</div>
+                        <div class="fraction">
+                            <div class="numerator">1</div>
+                            <div class="denominator">3</div>
+                        </div>
+                        <div class="operation">=</div>
+                        <div class="fraction">
+                            <div class="numerator">3</div>
+                            <div class="denominator">6</div>
+                        </div>
+                        <div class="operation">+</div>
+                        <div class="fraction">
+                            <div class="numerator">2</div>
+                            <div class="denominator">6</div>
+                        </div>
+                        <div class="operation">=</div>
+                        <div class="fraction">
+                            <div class="numerator">5</div>
+                            <div class="denominator">6</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="example">
+                    <p><strong>4-мысал:</strong></p>
+                    <div class="math-expression">
+                        <div class="mixed-number">
+                            <span>2</span>
+                            <div class="fraction">
+                                <div class="numerator">1</div>
+                                <div class="denominator">3</div>
+                            </div>
+                        </div>
+                        <div class="operation">+</div>
+                        <div class="mixed-number">
+                            <span>1</span>
+                            <div class="fraction">
+                                <div class="numerator">1</div>
+                                <div class="denominator">2</div>
+                            </div>
+                        </div>
+                        <div class="operation">=</div>
+                        <div class="mixed-number">
+                            <span>2</span>
+                            <div class="fraction">
+                                <div class="numerator">2</div>
+                                <div class="denominator">6</div>
+                            </div>
+                        </div>
+                        <div class="operation">+</div>
+                        <div class="mixed-number">
+                            <span>1</span>
+                            <div class="fraction">
+                                <div class="numerator">3</div>
+                                <div class="denominator">6</div>
+                            </div>
+                        </div>
+                        <div class="operation">=</div>
+                        <div class="mixed-number">
+                            <span>3</span>
+                            <div class="fraction">
+                                <div class="numerator">5</div>
+                                <div class="denominator">6</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 25px;">
+                <button class="game-button" onclick="openTab('level1')">🎮 Ойынды бастау</button>
+            </div>
+        </div>
+        
+        <div id="level1" class="content">
+            <div class="level">
+                <h3>🎮 1-деңгей: Бірдей бөлімді бөлшектер</h3>
+                
+                <div class="problem">
+                    <div class="problem-header">
+                        <div class="problem-number">1</div>
+                        <div class="problem-content">
+                            <div class="problem-text">
+                                <div class="math-expression">
+                                    <div class="fraction">
+                                        <div class="numerator">3</div>
+                                        <div class="denominator">7</div>
+                                    </div>
+                                    <div class="operation">+</div>
+                                    <div class="fraction">
+                                        <div class="numerator">2</div>
+                                        <div class="denominator">7</div>
+                                    </div>
+                                    <div class="equals">=</div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="fraction-input">
+                                    <div class="fraction-part">
+                                        <input type="number" id="q1-1-num" placeholder="?">
+                                        <div class="fraction-line"></div>
+                                        <input type="number" id="q1-1-den" placeholder="?">
+                                    </div>
+                                </div>
+                                <button onclick="checkAnswer('q1-1', 5, 7)">Тексеру</button>
+                            </div>
+                            <div class="feedback" id="fb1-1"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="problem">
+                    <div class="problem-header">
+                        <div class="problem-number">2</div>
+                        <div class="problem-content">
+                            <div class="problem-text">
+                                <div class="math-expression">
+                                    <div class="fraction">
+                                        <div class="numerator">5</div>
+                                        <div class="denominator">9</div>
+                                    </div>
+                                    <div class="operation">-</div>
+                                    <div class="fraction">
+                                        <div class="numerator">2</div>
+                                        <div class="denominator">9</div>
+                                    </div>
+                                    <div class="equals">=</div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="fraction-input">
+                                    <div class="fraction-part">
+                                        <input type="number" id="q1-2-num" placeholder="?">
+                                        <div class="fraction-line"></div>
+                                        <input type="number" id="q1-2-den" placeholder="?">
+                                    </div>
+                                </div>
+                                <button onclick="checkAnswer('q1-2', 3, 9)">Тексеру</button>
+                            </div>
+                            <div class="feedback" id="fb1-2"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="problem">
+                    <div class="problem-header">
+                        <div class="problem-number">3</div>
+                        <div class="problem-content">
+                            <div class="problem-text">
+                                <div class="math-expression">
+                                    <div class="fraction">
+                                        <div class="numerator">1</div>
+                                        <div class="denominator">5</div>
+                                    </div>
+                                    <div class="operation">+</div>
+                                    <div class="fraction">
+                                        <div class="numerator">3</div>
+                                        <div class="denominator">5</div>
+                                    </div>
+                                    <div class="equals">=</div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="fraction-input">
+                                    <div class="fraction-part">
+                                        <input type="number" id="q1-3-num" placeholder="?">
+                                        <div class="fraction-line"></div>
+                                        <input type="number" id="q1-3-den" placeholder="?">
+                                    </div>
+                                </div>
+                                <button onclick="checkAnswer('q1-3', 4, 5)">Тексеру</button>
+                            </div>
+                            <div class="feedback" id="fb1-3"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="problem">
+                    <div class="problem-header">
+                        <div class="problem-number">4</div>
+                        <div class="problem-content">
+                            <div class="problem-text">
+                                <div class="math-expression">
+                                    <div class="fraction">
+                                        <div class="numerator">7</div>
+                                        <div class="denominator">8</div>
+                                    </div>
+                                    <div class="operation">-</div>
+                                    <div class="fraction">
+                                        <div class="numerator">3</div>
+                                        <div class="denominator">8</div>
+                                    </div>
+                                    <div class="equals">=</div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="fraction-input">
+                                    <div class="fraction-part">
+                                        <input type="number" id="q1-4-num" placeholder="?">
+                                        <div class="fraction-line"></div>
+                                        <input type="number" id="q1-4-den" placeholder="?">
+                                    </div>
+                                </div>
+                                <button onclick="checkAnswer('q1-4', 4, 8)">Тексеру</button>
+                            </div>
+                            <div class="feedback" id="fb1-4"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="problem">
+                    <div class="problem-header">
+                        <div class="problem-number">5</div>
+                        <div class="problem-content">
+                            <div class="problem-text">
+                                <div class="math-expression">
+                                    <div class="fraction">
+                                        <div class="numerator">2</div>
+                                        <div class="denominator">11</div>
+                                    </div>
+                                    <div class="operation">+</div>
+                                    <div class="fraction">
+                                        <div class="numerator">5</div>
+                                        <div class="denominator">11</div>
+                                    </div>
+                                    <div class="equals">=</div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="fraction-input">
+                                    <div class="fraction-part">
+                                        <input type="number" id="q1-5-num" placeholder="?">
+                                        <div class="fraction-line"></div>
+                                        <input type="number" id="q1-5-den" placeholder="?">
+                                    </div>
+                                </div>
+                                <button onclick="checkAnswer('q1-5', 7, 11)">Тексеру</button>
+                            </div>
+                            <div class="feedback" id="fb1-5"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="praise" id="praise1">Тамаша! Сіз бірдей бөлімді бөлшектермен жұмыс істеуді білесіз!</div>
+        </div>
+        
+        <div id="level2" class="content">
+            <div class="level">
+                <h3>🎯 2-деңгей: Әртүрлі бөлімді бөлшектер</h3>
+                
+                <div class="problem">
+                    <div class="problem-header">
+                        <div class="problem-number">1</div>
+                        <div class="problem-content">
+                            <div class="problem-text">
+                                <div class="math-expression">
+                                    <div class="fraction">
+                                        <div class="numerator">1</div>
+                                        <div class="denominator">2</div>
+                                    </div>
+                                    <div class="operation">+</div>
+                                    <div class="fraction">
+                                        <div class="numerator">1</div>
+                                        <div class="denominator">4</div>
+                                    </div>
+                                    <div class="equals">=</div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="fraction-input">
+                                    <div class="fraction-part">
+                                        <input type="number" id="q2-1-num" placeholder="?">
+                                        <div class="fraction-line"></div>
+                                        <input type="number" id="q2-1-den" placeholder="?">
+                                    </div>
+                                </div>
+                                <button onclick="checkAnswer('q2-1', 3, 4)">Тексеру</button>
+                            </div>
+                            <div class="feedback" id="fb2-1"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="problem">
+                    <div class="problem-header">
+                        <div class="problem-number">2</div>
+                        <div class="problem-content">
+                            <div class="problem-text">
+                                <div class="math-expression">
+                                    <div class="fraction">
+                                        <div class="numerator">2</div>
+                                        <div class="denominator">3</div>
+                                    </div>
+                                    <div class="operation">-</div>
+                                    <div class="fraction">
+                                        <div class="numerator">1</div>
+                                        <div class="denominator">6</div>
+                                    </div>
+                                    <div class="equals">=</div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="fraction-input">
+                                    <div class="fraction-part">
+                                        <input type="number" id="q2-2-num" placeholder="?">
+                                        <div class="fraction-line"></div>
+                                        <input type="number" id="q2-2-den" placeholder="?">
+                                    </div>
+                                </div>
+                                <button onclick="checkAnswer('q2-2', 3, 6)">Тексеру</button>
+                            </div>
+                            <div class="feedback" id="fb2-2"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="problem">
+                    <div class="problem-header">
+                        <div class="problem-number">3</div>
+                        <div class="problem-content">
+                            <div class="problem-text">
+                                <div class="math-expression">
+                                    <div class="fraction">
+                                        <div class="numerator">3</div>
+                                        <div class="denominator">4</div>
+                                    </div>
+                                    <div class="operation">+</div>
+                                    <div class="fraction">
+                                        <div class="numerator">2</div>
+                                        <div class="denominator">5</div>
+                                    </div>
+                                    <div class="equals">=</div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="fraction-input">
+                                    <div class="fraction-part">
+                                        <input type="number" id="q2-3-num" placeholder="?">
+                                        <div class="fraction-line"></div>
+                                        <input type="number" id="q2-3-den" placeholder="?">
+                                    </div>
+                                </div>
+                                <button onclick="checkAnswer('q2-3', 23, 20)">Тексеру</button>
+                            </div>
+                            <div class="feedback" id="fb2-3"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="problem">
+                    <div class="problem-header">
+                        <div class="problem-number">4</div>
+                        <div class="problem-content">
+                            <div class="problem-text">
+                                <div class="math-expression">
+                                    <div class="mixed-number">
+                                        <span>1</span>
+                                        <div class="fraction">
+                                            <div class="numerator">1</div>
+                                            <div class="denominator">3</div>
+                                        </div>
+                                    </div>
+                                    <div class="operation">+</div>
+                                    <div class="mixed-number">
+                                        <span>2</span>
+                                        <div class="fraction">
+                                            <div class="numerator">1</div>
+                                            <div class="denominator">2</div>
+                                        </div>
+                                    </div>
+                                    <div class="equals">=</div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="mixed-input-container">
+                                    <div class="mixed-input">
+                                        <input type="number" id="q2-4-whole" placeholder="0" class="whole-input">
+                                        <div class="fraction-input">
+                                            <div class="fraction-part">
+                                                <input type="number" id="q2-4-num" placeholder="?">
+                                                <div class="fraction-line"></div>
+                                                <input type="number" id="q2-4-den" placeholder="?">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button onclick="checkMixedAnswer('q2-4', 3, 5, 6)">Тексеру</button>
+                                </div>
+                            </div>
+                            <div class="feedback" id="fb2-4"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="problem">
+                    <div class="problem-header">
+                        <div class="problem-number">5</div>
+                        <div class="problem-content">
+                            <div class="problem-text">
+                                <div class="math-expression">
+                                    <div class="mixed-number">
+                                        <span>3</span>
+                                        <div class="fraction">
+                                            <div class="numerator">2</div>
+                                            <div class="denominator">7</div>
+                                        </div>
+                                    </div>
+                                    <div class="operation">-</div>
+                                    <div class="mixed-number">
+                                        <span>1</span>
+                                        <div class="fraction">
+                                            <div class="numerator">3</div>
+                                            <div class="denominator">14</div>
+                                        </div>
+                                    </div>
+                                    <div class="equals">=</div>
+                                </div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="mixed-input-container">
+                                    <div class="mixed-input">
+                                        <input type="number" id="q2-5-whole" placeholder="0" class="whole-input">
+                                        <div class="fraction-input">
+                                            <div class="fraction-part">
+                                                <input type="number" id="q2-5-num" placeholder="?">
+                                                <div class="fraction-line"></div>
+                                                <input type="number" id="q2-5-den" placeholder="?">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button onclick="checkMixedAnswer('q2-5', 2, 1, 14)">Тексеру</button>
+                                </div>
+                            </div>
+                            <div class="feedback" id="fb2-5"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="praise" id="praise2">Керемет! Сіз әртүрлі бөлімді бөлшектермен жұмыс істей аласыз!</div>
+        </div>
+        
+        <div id="level3" class="content">
+            <div class="level">
+                <h3>🏆 3-деңгей: Өмірлік есептер</h3>
+                
+                <div class="problem">
+                    <div class="problem-header">
+                        <div class="problem-number">1</div>
+                        <div class="problem-content">
+                            <div class="problem-text">
+                                Айгүл торт пісіру үшін 
+                                <div class="mixed-number">
+                                    <span>2</span>
+                                    <div class="fraction">
+                                        <div class="numerator">1</div>
+                                        <div class="denominator">2</div>
+                                    </div>
+                                </div>
+                                стақан ұн және 
+                                <div class="mixed-number">
+                                    <span>1</span>
+                                    <div class="fraction">
+                                        <div class="numerator">1</div>
+                                        <div class="denominator">4</div>
+                                    </div>
+                                </div>
+                                стақан қант алады. Барлығы неше стақан ингредиент қажет?
+                            </div>
+                            <div class="answer-section">
+                                <div class="mixed-input-container">
+                                    <div class="mixed-input">
+                                        <input type="number" id="q3-1-whole" placeholder="0" class="whole-input">
+                                        <div class="fraction-input">
+                                            <div class="fraction-part">
+                                                <input type="number" id="q3-1-num" placeholder="?">
+                                                <div class="fraction-line"></div>
+                                                <input type="number" id="q3-1-den" placeholder="?">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button onclick="checkMixedAnswer('q3-1', 3, 3, 4)">Тексеру</button>
+                                </div>
+                            </div>
+                            <div class="feedback" id="fb3-1"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="problem">
+                    <div class="problem-header">
+                        <div class="problem-number">2</div>
+                        <div class="problem-content">
+                            <div class="problem-text">
+                                Бақшаның 
+                                <div class="fraction">
+                                    <div class="numerator">3</div>
+                                    <div class="denominator">5</div>
+                                </div>
+                                бөлігіне картоп, ал 
+                                <div class="fraction">
+                                    <div class="numerator">1</div>
+                                    <div class="denominator">4</div>
+                                </div>
+                                бөлігіне сәбіз егілді. Бақшаның қанша бөлігі бос қалды?
+                            </div>
+                            <div class="answer-section">
+                                <div class="fraction-input">
+                                    <div class="fraction-part">
+                                        <input type="number" id="q3-2-num" placeholder="?">
+                                        <div class="fraction-line"></div>
+                                        <input type="number" id="q3-2-den" placeholder="?">
+                                    </div>
+                                </div>
+                                <button onclick="checkAnswer('q3-2', 3, 20)">Тексеру</button>
+                            </div>
+                            <div class="feedback" id="fb3-2"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="problem">
+                    <div class="problem-header">
+                        <div class="problem-number">3</div>
+                        <div class="problem-content">
+                            <div class="problem-text">
+                                Бірінші күні Асхат 
+                                <div class="mixed-number">
+                                    <span>5</span>
+                                    <div class="fraction">
+                                        <div class="numerator">3</div>
+                                        <div class="denominator">4</div>
+                                    </div>
+                                </div>
+                                км, екінші күні 
+                                <div class="mixed-number">
+                                    <span>4</span>
+                                    <div class="fraction">
+                                        <div class="numerator">1</div>
+                                        <div class="denominator">2</div>
+                                    </div>
+                                </div>
+                                км жүрді. Екі күнде ол неше км жүрді?
+                            </div>
+                            <div class="answer-section">
+                                <div class="mixed-input-container">
+                                    <div class="mixed-input">
+                                        <input type="number" id="q3-3-whole" placeholder="0" class="whole-input">
+                                        <div class="fraction-input">
+                                            <div class="fraction-part">
+                                                <input type="number" id="q3-3-num" placeholder="?">
+                                                <div class="fraction-line"></div>
+                                                <input type="number" id="q3-3-den" placeholder="?">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button onclick="checkMixedAnswer('q3-3', 10, 1, 4)">Тексеру</button>
+                                </div>
+                            </div>
+                            <div class="feedback" id="fb3-3"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="problem">
+                    <div class="problem-header">
+                        <div class="problem-number">4</div>
+                        <div class="problem-content">
+                            <div class="problem-text">
+                                Сыныпта 30 оқушы бар. Олардың 
+                                <div class="fraction">
+                                    <div class="numerator">2</div>
+                                    <div class="denominator">5</div>
+                                </div>
+                                бөлігі қыздар. Қыздар саны нешеу? (Жауабыңызды бөлшек түрінде жаз)
+                            </div>
+                            <div class="answer-section">
+                                <div class="fraction-input">
+                                    <div class="fraction-part">
+                                        <input type="number" id="q3-4-num" placeholder="?">
+                                        <div class="fraction-line"></div>
+                                        <input type="number" id="q3-4-den" placeholder="?">
+                                    </div>
+                                </div>
+                                <button onclick="checkAnswer('q3-4', 12, 1)">Тексеру</button>
+                            </div>
+                            <div class="feedback" id="fb3-4"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="problem">
+                    <div class="problem-header">
+                        <div class="problem-number">5</div>
+                        <div class="problem-content">
+                            <div class="problem-text">
+                                Бір түтікке 
+                                <div class="fraction">
+                                    <div class="numerator">3</div>
+                                    <div class="denominator">4</div>
+                                </div>
+                                л, екіншісіне 
+                                <div class="fraction">
+                                    <div class="numerator">2</div>
+                                    <div class="denominator">3</div>
+                                </div>
+                                л сүт құйылды. Екі түтікке барлығы неше литр сүт құйылды?
+                            </div>
+                            <div class="answer-section">
+                                <div class="mixed-input-container">
+                                    <div class="mixed-input">
+                                        <input type="number" id="q3-5-whole" placeholder="0" class="whole-input">
+                                        <div class="fraction-input">
+                                            <div class="fraction-part">
+                                                <input type="number" id="q3-5-num" placeholder="?">
+                                                <div class="fraction-line"></div>
+                                                <input type="number" id="q3-5-den" placeholder="?">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button onclick="checkMixedAnswer('q3-5', 1, 5, 12)">Тексеру</button>
+                                </div>
+                            </div>
+                            <div class="feedback" id="fb3-5"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="real-life">
+                <h3>Бөлшектер өмірде қай жерде қолданылады?</h3>
+                <p>Бөлшектер біздің күнделікті өмірімізде кеңінен қолданылады:</p>
+                <ul>
+                    <li>Аспаздықта рецепттерді дайындау кезінде</li>
+                    <li>Уақытты есептеуде (сағаттың минуттары)</li>
+                    <li>Ақшаны бөлуде (1/2 теңге, 1/4 теңге)</li>
+                    <li>Өлшемдерде (1/2 метр, 3/4 литр)</li>
+                    <li>Спортта (1/2 футбол алаңы, 3/4 баскетбол алаңы)</li>
+                </ul>
+            </div>
+            
+            <div class="praise" id="praise3">Керемет! Сіз бөлшектерді өмірлік есептерді шешуде қолдана аласыз!</div>
+        </div>
+    </div>
+
+    <script>
+        // Ойын айнымалылары
+        let totalScore = 0;
+        let currentLevel = 1;
+        let correctStreak = 0;
+        let totalCorrect = 0;
+        let totalQuestions = 15; // Барлық есептер саны
+
+        // Бөлімдерді ауыстыру функциясы
+        function openTab(tabName) {
+            const tabs = document.getElementsByClassName("tab");
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            
+            const contents = document.getElementsByClassName("content");
+            for (let i = 0; i < contents.length; i++) {
+                contents[i].classList.remove("active");
+            }
+            
+            document.querySelector(`.tab[onclick="openTab('${tabName}')"]`).classList.add("active");
+            document.getElementById(tabName).classList.add("active");
+
+            // Егер ойын бөліміне өтсе, прогресті жаңарту
+            if (tabName !== 'theory') {
+                updateProgressDisplay();
+            }
+        }
+        
+        // Жауапты тексеру функциясы (жай бөлшектер үшін)
+        function checkAnswer(inputId, correctNum, correctDen) {
+            const numInput = document.getElementById(inputId + '-num');
+            const denInput = document.getElementById(inputId + '-den');
+            const feedback = document.getElementById(`fb${inputId.substring(1)}`);
+            const praise = document.getElementById(`praise${inputId.charAt(1)}`);
+            const problemElement = numInput.closest('.problem');
+            
+            const userNum = parseInt(numInput.value);
+            const userDen = parseInt(denInput.value);
+            
+            if (isNaN(userNum) || isNaN(userDen)) {
+                feedback.textContent = "Қате! Сандарды дұрыс енгізіңіз.";
+                feedback.className = "feedback incorrect";
+                feedback.style.display = "block";
+                praise.style.display = "none";
+                problemElement.classList.add('incorrect');
+                resetStreak();
+                return;
+            }
+            
+            if (userNum === correctNum && userDen === correctDen) {
+                feedback.textContent = "✅ Дұрыс! Жақсы жұмыс!";
+                feedback.className = "feedback correct";
+                feedback.style.display = "block";
+                problemElement.classList.add('correct');
+                problemElement.classList.remove('incorrect');
+                
+                // Ұпай және прогресті жаңарту
+                updateScore(10);
+                correctStreak++;
+                totalCorrect++;
+                updateProgress();
+                
+                showRandomPraise(praise);
+                createConfetti();
+                
+                // Келесі сұраққа өту
+                setTimeout(() => {
+                    const nextNumInput = document.querySelector(`#${inputId}-num`).closest('.problem').nextElementSibling?.querySelector('input[type="number"]');
+                    if (nextNumInput) {
+                        nextNumInput.focus();
+                    }
+                }, 1500);
+            } else {
+                feedback.textContent = `❌ Қате! Дұрыс жауап: ${correctNum}/${correctDen}`;
+                feedback.className = "feedback incorrect";
+                feedback.style.display = "block";
+                praise.style.display = "none";
+                problemElement.classList.add('incorrect');
+                problemElement.classList.remove('correct');
+                resetStreak();
+            }
+        }
+        
+        // Аралас сандарды тексеру функциясы
+        function checkMixedAnswer(inputId, correctWhole, correctNum, correctDen) {
+            const wholeInput = document.getElementById(inputId + '-whole');
+            const numInput = document.getElementById(inputId + '-num');
+            const denInput = document.getElementById(inputId + '-den');
+            const feedback = document.getElementById(`fb${inputId.substring(1)}`);
+            const praise = document.getElementById(`praise${inputId.charAt(1)}`);
+            const problemElement = wholeInput.closest('.problem');
+            
+            const userWhole = parseInt(wholeInput.value) || 0;
+            const userNum = parseInt(numInput.value) || 0;
+            const userDen = parseInt(denInput.value) || 1;
+            
+            if (isNaN(userWhole) || isNaN(userNum) || isNaN(userDen) || userDen === 0) {
+                feedback.textContent = "Қате! Сандарды дұрыс енгізіңіз.";
+                feedback.className = "feedback incorrect";
+                feedback.style.display = "block";
+                praise.style.display = "none";
+                problemElement.classList.add('incorrect');
+                resetStreak();
+                return;
+            }
+            
+            if (userWhole === correctWhole && userNum === correctNum && userDen === correctDen) {
+                feedback.textContent = `✅ Дұрыс! Жақсы жұмыс! (${correctWhole} ${correctNum}/${correctDen})`;
+                feedback.className = "feedback correct";
+                feedback.style.display = "block";
+                problemElement.classList.add('correct');
+                problemElement.classList.remove('incorrect');
+                
+                // Ұпай және прогресті жаңарту
+                updateScore(15);
+                correctStreak++;
+                totalCorrect++;
+                updateProgress();
+                
+                showRandomPraise(praise);
+                createConfetti();
+                
+                // Келесі сұраққа өту
+                setTimeout(() => {
+                    const nextInput = document.querySelector(`#${inputId}-whole`).closest('.problem').nextElementSibling?.querySelector('input[type="number"]');
+                    if (nextInput) {
+                        nextInput.focus();
+                    }
+                }, 1500);
+            } else {
+                feedback.textContent = `❌ Қате! Дұрыс жауап: ${correctWhole} ${correctNum}/${correctDen}`;
+                feedback.className = "feedback incorrect";
+                feedback.style.display = "block";
+                praise.style.display = "none";
+                problemElement.classList.add('incorrect');
+                problemElement.classList.remove('correct');
+                resetStreak();
+            }
+        }
+        
+        // Ұпайды жаңарту
+        function updateScore(points) {
+            totalScore += points;
+            if (correctStreak >= 3) {
+                totalScore += 5; // Үздік серия бонусы
+            }
+            document.getElementById('score').textContent = `Ұпай: ${totalScore}`;
+            document.getElementById('streak').textContent = `Үздік серия: ${correctStreak}`;
+        }
+
+        // Серияны нөлге келтіру
+        function resetStreak() {
+            correctStreak = 0;
+            document.getElementById('streak').textContent = `Үздік серия: ${correctStreak}`;
+        }
+
+        // Прогресті жаңарту
+        function updateProgress() {
+            const progress = (totalCorrect / totalQuestions) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            
+            // Жұлдыздарды жаңарту
+            const stars = Math.min(5, Math.floor(progress / 20));
+            const starElements = document.querySelectorAll('.star');
+            starElements.forEach((star, index) => {
+                if (index < stars) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+
+            // Барлық есептер шешілгенде
+            if (totalCorrect >= totalQuestions) {
+                showCompletionMessage();
+            }
+        }
+
+        // Прогресті көрсету
+        function updateProgressDisplay() {
+            updateProgress();
+        }
+
+        // Аяқтау хабарламасы
+        function showCompletionMessage() {
+            const message = document.createElement('div');
+            message.className = 'completion-message';
+            message.innerHTML = `
+                <h2>🎉 Керемет! 🎉</h2>
+                <p>Сіз барлық ${totalQuestions} есепті сәтті шештіңіз!</p>
+                <p>Жиналған ұпай: <strong>${totalScore}</strong></p>
+                <p>Алынған жұлдыздар: <strong>${Math.min(5, Math.floor((totalCorrect / totalQuestions) * 5))}/5</strong></p>
+                <button class="game-button" onclick="resetGame()">🔄 Қайта бастау</button>
+            `;
+            document.querySelector('.container').appendChild(message);
+            message.style.display = 'block';
+            
+            // Конфетти эффектісі
+            for (let i = 0; i < 50; i++) {
+                createConfetti();
+            }
+        }
+
+        // Ойынды қайта бастау
+        function resetGame() {
+            totalScore = 0;
+            currentLevel = 1;
+            correctStreak = 0;
+            totalCorrect = 0;
+            
+            document.getElementById('score').textContent = `Ұпай: 0`;
+            document.getElementById('streak').textContent = `Үздік серия: 0`;
+            document.getElementById('progress-bar').style.width = '0%';
+            
+            // Барлық есептерді қайта орнату
+            const problems = document.querySelectorAll('.problem');
+            problems.forEach(problem => {
+                problem.classList.remove('correct', 'incorrect');
+            });
+            
+            const feedbacks = document.querySelectorAll('.feedback');
+            feedbacks.forEach(feedback => {
+                feedback.style.display = 'none';
+            });
+            
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.value = '';
+            });
+            
+            const praises = document.querySelectorAll('.praise');
+            praises.forEach(praise => {
+                praise.style.display = 'none';
+            });
+            
+            // Жұлдыздарды қайта орнату
+            const starElements = document.querySelectorAll('.star');
+            starElements.forEach(star => {
+                star.classList.remove('active');
+            });
+            
+            // Аяқтау хабарламасын жою
+            const completionMessage = document.querySelector('.completion-message');
+            if (completionMessage) {
+                completionMessage.remove();
+            }
+        }
+
+        // Конфетти эффектісі
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.backgroundColor = getRandomColor();
+            confetti.style.animationDuration = (Math.random() * 2 + 1) + 's';
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                confetti.remove();
+            }, 3000);
+        }
+
+        function getRandomColor() {
+            const colors = ['#ff6b6b', '#ffa726', '#ffee58', '#66bb6a', '#42a5f5', '#ab47bc'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+        
+        // Кездейсоқ мадақтау сөздерін көрсету
+        function showRandomPraise(praiseElement) {
+            const praises = [
+                "🎉 Керемет! Сіз математиканың шеберісіз!",
+                "🚀 Тамаша! Сіз бөлшектерді жақсы білесіз!",
+                "⭐ Жақсы! Математика сізге оңай келеді!",
+                "💫 Керемет! Сіз бөлшектермен есептеулерді шебер орындадыңыз!",
+                "🏆 Тамаша! Сіз математикалық есептерді шешуді білесіз!",
+                "🔥 Керемет ойын! Жалғастырыңыз!",
+                "🌟 Сіздің математикалық дағдыларыңыз тамаша!"
+            ];
+            
+            const randomPraise = praises[Math.floor(Math.random() * praises.length)];
+            praiseElement.textContent = randomPraise;
+            praiseElement.style.display = "block";
+        }
+
+        // Бастапқы прогресті көрсету
+        updateProgressDisplay();
+    </script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Математика - Интерактивті тапсырмалар</title>
+    <style>
+        /* Минималистичные стили в духе Beatport - математикалық фон */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #0a0e17;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(28, 58, 113, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 60%, rgba(28, 58, 113, 0.1) 0%, transparent 20%),
+                linear-gradient(45deg, transparent 49%, rgba(78, 124, 193, 0.05) 50%, transparent 51%),
+                linear-gradient(-45deg, transparent 49%, rgba(78, 124, 193, 0.05) 50%, transparent 51%);
+            background-size: 100% 100%, 100% 100%, 50px 50px, 50px 50px;
+            color: #fff;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: rgba(17, 25, 40, 0.9);
+            padding: 40px;
+            border: 1px solid #2a3a5a;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo img {
+            max-width: 150px;
+            height: auto;
+        }
+        
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+            font-size: 2.2rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #89a3d4;
+            margin-bottom: 40px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        hr {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #2a3a5a, transparent);
+            margin: 40px 0;
+        }
+        
+        .menu-item {
+            margin-bottom: 20px;
+            padding: 25px;
+            border: 1px solid #2a3a5a;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background-color: rgba(26, 36, 57, 0.7);
+            position: relative;
+            border-radius: 6px;
+        }
+        
+        .menu-item:hover {
+            background-color: rgba(42, 58, 90, 0.8);
+            border-color: #4a6bb8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(42, 58, 90, 0.4);
+        }
+        
+        .menu-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        
+        .menu-description {
+            color: #89a3d4;
+            font-size: 0.9rem;
+        }
+        
+        /* Минималистичные эффекты */
+        .menu-item::after {
+            content: "→";
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4a6bb8;
+            font-weight: 300;
+            transition: transform 0.2s ease;
+        }
+        
+        .menu-item:hover::after {
+            transform: translateY(-50%) translateX(3px);
+            color: #89a3d4;
+        }
+        
+        /* Футер с авторскими правами - чуть ниже контейнера */
+        .copyright {
+            margin-top: 30px;
+            text-align: center;
+            width: 100%;
+            color: #4a6bb8;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="ЭМБЛ.png" alt="эмблема">
+        </div>
+        
+        <h1>Математика</h1>
+        <div class="subtitle">Интерактивті математикалық тапсырмалар</div>
+        
+        <hr>
+        
+        <a href="жай бөлшектер мен аралас сандар.html" style="text-decoration: none;">
+            <div class="menu-item">
+                <div class="menu-title">1. Жай бөлшектер мен аралас сандар</div>
+                <div class="menu-description"> </div>
+            </div>
+        </a>
+        
+        <a href="тең бөлшектер.html" style="text-decoration: none;">
+            <div class="menu-item">
+                <div class="menu-title">2. Тең бөлшектер</div>
+                <div class="menu-description"> </div>
+            </div>
+        </a>
+        
+        <a href="Жай бөлшектермен аралас сандарды ортақ бөлімге келтіру.html" style="text-decoration: none;">
+            <div class="menu-item">
+                <div class="menu-title">3. Жай бөлшектер мен аралас сандарды ортақ бөлімге келтіру</div>
+                <div class="menu-description"> </div>
+            </div>
+        </a>
+        
+        <!-- Жаңа қосылған бөлімдер -->
+        <a href="Бөлшек сандарды салыстыру.html" style="text-decoration: none;">
+            <div class="menu-item">
+                <div class="menu-title">4. Бөлшек сандарды салыстыру</div>
+                <div class="menu-description"> </div>
+            </div>
+        </a>
+        
+        <a href="Жай бөлшектер мен аралас сандарды қосу.html" style="text-decoration: none;">
+            <div class="menu-item">
+                <div class="menu-title">5. Жай бөлшектер мен аралас сандарды қосу және азайту</div>
+                <div class="menu-description"> </div>
+            </div>
+        </a>
+        
+        <a href="Жай бөлшектер мен аралас сандарды көбейту.html" style="text-decoration: none;">
+            <div class="menu-item">
+                <div class="menu-title">6. Жай бөлшектер мен аралас сандарды көбейту</div>
+                <div class="menu-description"> </div>
+            </div>
+        </a>
+
+        <a href="Жай.html" style="text-decoration: none;">
+            <div class="menu-item">
+                <div class="menu-title">7. Жай бөлшектер мен аралас сандарды бөлу</div>
+                <div class="menu-description"> </div>
+            </div>
+        </a>
+        
+        <a href="Бөлшектер әлеміне саяхат.html" style="text-decoration: none;">
+            <div class="menu-item">
+                <div class="menu-title">8. Бөлшектер әлеміне саяхат</div>
+                <div class="menu-description"> </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="copyright">
+        <br>
+        Оразалы Сұлтанбек 2025 ж.
+    </div>
+
+    <script>
+        // Минималистичный JavaScript для улучшения UX
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuItems = document.querySelectorAll('.menu-item');
+            
+            menuItems.forEach(item => {
+                // Мәзір элементтеріне басқан кезде хабарлама көрсету
+                item.addEventListener('click', function() {
+                    const title = this.querySelector('.menu-title').textContent;
+                    console.log(`${title} тапсырмасы ашылуда...`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

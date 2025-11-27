@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Жай бөлшектер мен аралас сандарды бөлу - Теория </title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #4A00E0, #8E2DE2);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background-color: #f1f1f1;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab:hover {
+            background-color: #e9e9e9;
+        }
+        
+        .tab.active {
+            background-color: white;
+            border-bottom: 3px solid #4A00E0;
+            color: #4A00E0;
+        }
+        
+        .content {
+            padding: 30px;
+            min-height: 500px;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Теория бөлімі */
+        .theory-section {
+            background-color: #f9f9f9;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        /* Анимация бөлімі */
+        .animation-section {
+            background-color: #f9f9f9;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .animation-container {
+            width: 100%;
+            height: 300px;
+            background-color: white;
+            border-radius: 10px;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .fraction {
+            display: inline-block;
+            text-align: center;
+            margin: 0 5px;
+            font-size: 1.5rem;
+            vertical-align: middle;
+            line-height: 1;
+        }
+        
+        .numerator {
+            display: block;
+            padding: 0 8px;
+        }
+        
+        .denominator {
+            display: block;
+            padding: 0 8px;
+            border-top: 2px solid #333;
+        }
+        
+        .mixed-number {
+            display: inline-block;
+            margin: 0 5px;
+        }
+        
+        .example {
+            background-color: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #4A00E0;
+        }
+        
+        .step {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: #4A00E0;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+        }
+        
+        .practice-problem {
+            background-color: #e8f4ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .input-group {
+            margin: 15px 0;
+        }
+        
+        input[type="number"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 80px;
+            font-size: 1.1rem;
+        }
+        
+        button {
+            background: linear-gradient(90deg, #4A00E0, #8E2DE2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .shape {
+            position: absolute;
+            border: 2px solid #333;
+            background-color: rgba(74, 0, 224, 0.2);
+        }
+        
+        .circle {
+            border-radius: 50%;
+        }
+        
+        .explanation {
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+        
+        .animation-explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            border-left: 4px solid #4A00E0;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f1f1f1;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Жай бөлшектер мен аралас сандарды бөлу</h1>
+            <p class="subtitle">Интерактивті оқу зертханасы</p>
+        </header>
+        
+        <div class="nav-tabs">
+            <div class="tab active" data-tab="theory-animation">Теория</div>
+            <div class="tab" data-tab="practice">Практика</div>
+            <div class="tab" data-tab="test">Тест</div>
+        </div>
+        
+        <div class="content">
+            <!-- Теория және анимация біріктірілген бөлімі -->
+            <div id="theory-animation" class="tab-content active">
+                <h2>Бөлшектер мен аралас сандарды бөлу</h2>
+                
+                <!-- Теория бөлімі -->
+                <div class="theory-section">
+                    <h3>Теория</h3>
+                    
+                    <div class="explanation">
+                        <h4>Бөлшектерді бөлу</h4>
+                        <p>Бөлшектерді бөлу үшін бірінші бөлшекті екінші бөлшектің кері санына көбейтеміз.</p>
+                        <div class="example">
+                            <p><strong>Мысал:</strong> 
+                                <span class="fraction">
+                                    <span class="numerator">2</span>
+                                    <span class="denominator">3</span>
+                                </span> 
+                                ÷ 
+                                <span class="fraction">
+                                    <span class="numerator">4</span>
+                                    <span class="denominator">5</span>
+                                </span> 
+                                = 
+                                <span class="fraction">
+                                    <span class="numerator">2</span>
+                                    <span class="denominator">3</span>
+                                </span> 
+                                × 
+                                <span class="fraction">
+                                    <span class="numerator">5</span>
+                                    <span class="denominator">4</span>
+                                </span> 
+                                = 
+                                <span class="fraction">
+                                    <span class="numerator">10</span>
+                                    <span class="denominator">12</span>
+                                </span> 
+                                = 
+                                <span class="fraction">
+                                    <span class="numerator">5</span>
+                                    <span class="denominator">6</span>
+                                </span>
+                            </p>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            Бөлгіш бөлшектің алымы мен бөлімін ауыстырып, кері бөлшекті аламыз.
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            Бөлінетін бөлшекті кері бөлшекке көбейтеміз.
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            Алынған бөлшекті қысқартамыз (қажет болса).
+                        </div>
+                    </div>
+                    
+                    <div class="explanation">
+                        <h4>Аралас сандарды бөлу</h4>
+                        <p>Аралас сандарды бөлу үшін, алдымен оларды бұрыс бөлшек түріне келтіреміз, содан кейін бөлшектерді бөлу ережесін қолданамыз.</p>
+                        <div class="example">
+                            <p><strong>Мысал:</strong> 
+                                <span class="mixed-number">2<span class="fraction"><span class="numerator">1</span><span class="denominator">3</span></span></span> 
+                                ÷ 
+                                <span class="mixed-number">1<span class="fraction"><span class="numerator">1</span><span class="denominator">2</span></span></span> 
+                                = 
+                                <span class="fraction">
+                                    <span class="numerator">7</span>
+                                    <span class="denominator">3</span>
+                                </span> 
+                                ÷ 
+                                <span class="fraction">
+                                    <span class="numerator">3</span>
+                                    <span class="denominator">2</span>
+                                </span> 
+                                = 
+                                <span class="fraction">
+                                    <span class="numerator">7</span>
+                                    <span class="denominator">3</span>
+                                </span> 
+                                × 
+                                <span class="fraction">
+                                    <span class="numerator">2</span>
+                                    <span class="denominator">3</span>
+                                </span> 
+                                = 
+                                <span class="fraction">
+                                    <span class="numerator">14</span>
+                                    <span class="denominator">9</span>
+                                </span> 
+                                = 
+                                <span class="mixed-number">1<span class="fraction"><span class="numerator">5</span><span class="denominator">9</span></span></span>
+                            </p>
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            Аралас сандарды бұрыс бөлшек түріне келтіреміз.
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            Бөлшектерді бөлу ережесін қолданамыз.
+                        </div>
+                        
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            Нәтижені қысқартамыз немесе аралас сан түріне келтіреміз.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Анимация бөлімі -->
+                <div class="animation-section">
+                    <h3>Анимация</h3>
+                    <p>Төмендегі анимация бөлшектерді бөлу процесін көрсетеді:</p>
+                    
+                    <div class="animation-container" id="anim-container">
+                        <!-- Анимация осы жерде көрсетіледі -->
+                    </div>
+                    
+                    <div class="controls">
+                        <button id="start-anim">Анимацияны бастау</button>
+                        <button id="reset-anim">Қайта бастау</button>
+                    </div>
+                    
+                    <div class="animation-explanation">
+                        <p><strong>Анимация түсіндірмесі:</strong></p>
+                        <p>Анимация бойынша: 
+                            <span class="fraction">
+                                <span class="numerator">3</span>
+                                <span class="denominator">4</span>
+                            </span> 
+                            ÷ 
+                            <span class="fraction">
+                                <span class="numerator">1</span>
+                                <span class="denominator">2</span>
+                            </span> 
+                            бөліндісін қарастырайық.
+                        </p>
+                        <p>Бұл "
+                            <span class="fraction">
+                                <span class="numerator">3</span>
+                                <span class="denominator">4</span>
+                            </span>
+                            -тен 
+                            <span class="fraction">
+                                <span class="numerator">1</span>
+                                <span class="denominator">2</span>
+                            </span> 
+                            неше рет кіреді?" деген сұраққа тең.
+                        </p>
+                        <p>Анимацияда көрсетілгендей, 
+                            <span class="fraction">
+                                <span class="numerator">1</span>
+                                <span class="denominator">2</span>
+                            </span> 
+                            бөлігі 
+                            <span class="fraction">
+                                <span class="numerator">3</span>
+                                <span class="denominator">4</span>
+                            </span>
+                            -тен 
+                            <span class="mixed-number">1<span class="fraction"><span class="numerator">1</span><span class="denominator">2</span></span></span> 
+                            рет кіреді.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Практика бөлімі -->
+            <div id="practice" class="tab-content">
+                <h2>Практикалық тапсырмалар</h2>
+                
+                <div class="practice-problem">
+                    <h3>1-тапсырма: Бөлшектерді бөлу</h3>
+                    <p>Есептеңіз: 
+                        <span class="fraction">
+                            <span class="numerator">2</span>
+                            <span class="denominator">5</span>
+                        </span> 
+                        ÷ 
+                        <span class="fraction">
+                            <span class="numerator">3</span>
+                            <span class="denominator">4</span>
+                        </span>
+                    </p>
+                    
+                    <div class="input-group">
+                        <label>Жауабы: </label>
+                        <span class="fraction">
+                            <input type="number" id="p1-num" placeholder="" style="width: 60px; text-align: center; border: none; background: transparent;">
+                            <span class="denominator">
+                                <input type="number" id="p1-den" placeholder="" style="width: 60px; text-align: center; border: none; background: transparent;">
+                            </span>
+                        </span>
+                    </div>
+                    
+                    <button id="check-p1">Тексеру</button>
+                    <div id="result-p1" class="result"></div>
+                </div>
+                
+                <div class="practice-problem">
+                    <h3>2-тапсырма: Аралас сандарды бөлу</h3>
+                    <p>Есептеңіз: 
+                        <span class="mixed-number">2<span class="fraction"><span class="numerator">1</span><span class="denominator">2</span></span></span> 
+                        ÷ 
+                        <span class="mixed-number">1<span class="fraction"><span class="numerator">1</span><span class="denominator">3</span></span></span>
+                    </p>
+                    
+                    <div class="input-group">
+                        <label>Жауабы: </label>
+                        <input type="number" id="p2-whole" placeholder="бүтін" style="width: 60px;">
+                        <span class="fraction">
+                            <input type="number" id="p2-num" placeholder="" style="width: 60px; text-align: center; border: none; background: transparent;">
+                            <span class="denominator">
+                                <input type="number" id="p2-den" placeholder="" style="width: 60px; text-align: center; border: none; background: transparent;">
+                            </span>
+                        </span>
+                    </div>
+                    
+                    <button id="check-p2">Тексеру</button>
+                    <div id="result-p2" class="result"></div>
+                </div>
+                
+                <div class="practice-problem">
+                    <h3>3-тапсырма: Сөздік есеп</h3>
+                    <p>Мараттың 
+                        <span class="mixed-number">3<span class="fraction"><span class="numerator">3</span><span class="denominator">4</span></span></span> 
+                        кг алмасы бар. Ол оны әрқайсысы 
+                        <span class="fraction">
+                            <span class="numerator">3</span>
+                            <span class="denominator">8</span>
+                        </span> 
+                        кг болатын пакеттерге салуды жоспарлап отыр. Марат неше пакетке бөле алады?
+                    </p>
+                    
+                    <div class="input-group">
+                        <label>Жауабы: </label>
+                        <input type="number" id="p3-answer" placeholder="жауап">
+                    </div>
+                    
+                    <button id="check-p3">Тексеру</button>
+                    <div id="result-p3" class="result"></div>
+                </div>
+            </div>
+            
+            <!-- Тест бөлімі -->
+            <div id="test" class="tab-content">
+                <h2>Білімді тексеру тесті</h2>
+                <p>Төмендегі тест сұрақтарына жауап беріңіз:</p>
+                
+                <div class="practice-problem">
+                    <h3>1. 
+                        <span class="fraction">
+                            <span class="numerator">5</span>
+                            <span class="denominator">6</span>
+                        </span> 
+                        ÷ 
+                        <span class="fraction">
+                            <span class="numerator">2</span>
+                            <span class="denominator">3</span>
+                        </span> 
+                        бөліндісінің мәні қандай?
+                    </h3>
+                    <div class="input-group">
+                        <input type="radio" name="q1" value="a" id="q1a">
+                        <label for="q1a">a) 
+                            <span class="fraction">
+                                <span class="numerator">5</span>
+                                <span class="denominator">4</span>
+                            </span>
+                        </label><br>
+                        
+                        <input type="radio" name="q1" value="b" id="q1b">
+                        <label for="q1b">b) 
+                            <span class="fraction">
+                                <span class="numerator">10</span>
+                                <span class="denominator">18</span>
+                            </span>
+                        </label><br>
+                        
+                        <input type="radio" name="q1" value="c" id="q1c">
+                        <label for="q1c">c) 
+                            <span class="fraction">
+                                <span class="numerator">4</span>
+                                <span class="denominator">5</span>
+                            </span>
+                        </label><br>
+                        
+                        <input type="radio" name="q1" value="d" id="q1d">
+                        <label for="q1d">d) 
+                            <span class="fraction">
+                                <span class="numerator">15</span>
+                                <span class="denominator">12</span>
+                            </span>
+                        </label><br>
+                    </div>
+                </div>
+                
+                <div class="practice-problem">
+                    <h3>2. 
+                        <span class="mixed-number">3<span class="fraction"><span class="numerator">1</span><span class="denominator">2</span></span></span> 
+                        ÷ 
+                        <span class="mixed-number">2<span class="fraction"><span class="numerator">1</span><span class="denominator">4</span></span></span> 
+                        бөліндісінің мәні қандай?
+                    </h3>
+                    <div class="input-group">
+                        <input type="radio" name="q2" value="a" id="q2a">
+                        <label for="q2a">a) 
+                            <span class="mixed-number">1<span class="fraction"><span class="numerator">5</span><span class="denominator">9</span></span></span>
+                        </label><br>
+                        
+                        <input type="radio" name="q2" value="b" id="q2b">
+                        <label for="q2b">b) 
+                            <span class="mixed-number">1<span class="fraction"><span class="numerator">3</span><span class="denominator">4</span></span></span>
+                        </label><br>
+                        
+                        <input type="radio" name="q2" value="c" id="q2c">
+                        <label for="q2c">c) 
+                            <span class="mixed-number">1<span class="fraction"><span class="numerator">7</span><span class="denominator">9</span></span></span>
+                        </label><br>
+                        
+                        <input type="radio" name="q2" value="d" id="q2d">
+                        <label for="q2d">d) 
+                            <span class="mixed-number">1<span class="fraction"><span class="numerator">2</span><span class="denominator">3</span></span></span>
+                        </label><br>
+                    </div>
+                </div>
+                
+                <div class="practice-problem">
+                    <h3>3. Бөлшектерді бөлу кезінде бірінші бөлшекті екінші бөлшектің ... санына көбейтеміз.</h3>
+                    <div class="input-group">
+                        <input type="radio" name="q3" value="a" id="q3a">
+                        <label for="q3a">a) кері</label><br>
+                        
+                        <input type="radio" name="q3" value="b" id="q3b">
+                        <label for="q3b">b) қарама-қарсы</label><br>
+                        
+                        <input type="radio" name="q3" value="c" id="q3c">
+                        <label for="q3c">c) тең</label><br>
+                        
+                        <input type="radio" name="q3" value="d" id="q3d">
+                        <label for="q3d">d) қосынды</label><br>
+                    </div>
+                </div>
+                
+                <div class="practice-problem">
+                    <h3>4. 
+                        <span class="mixed-number">4</span> 
+                        ÷ 
+                        <span class="fraction">
+                            <span class="numerator">1</span>
+                            <span class="denominator">2</span>
+                        </span> 
+                        бөліндісінің мәні қандай?
+                    </h3>
+                    <div class="input-group">
+                        <input type="radio" name="q4" value="a" id="q4a">
+                        <label for="q4a">a) 
+                            <span class="mixed-number">2</span>
+                        </label><br>
+                        
+                        <input type="radio" name="q4" value="b" id="q4b">
+                        <label for="q4b">b) 
+                            <span class="mixed-number">8</span>
+                        </label><br>
+                        
+                        <input type="radio" name="q4" value="c" id="q4c">
+                        <label for="q4c">c) 
+                            <span class="fraction">
+                                <span class="numerator">1</span>
+                                <span class="denominator">8</span>
+                            </span>
+                        </label><br>
+                        
+                        <input type="radio" name="q4" value="d" id="q4d">
+                        <label for="q4d">d) 
+                            <span class="fraction">
+                                <span class="numerator">4</span>
+                                <span class="denominator">2</span>
+                            </span>
+                        </label><br>
+                    </div>
+                </div>
+                
+                <button id="submit-test">Тесті аяқтау</button>
+                <div id="test-result" class="result" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Бөлшектер мен аралас сандарды бөлу &copy; 2025</p>
+        </footer>
+    </div>
+
+    <script>
+        // Бөлімдер арасында ауысу
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Барлық бөлімдерді жасыру
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Барлық тармақтардың белсенділігін алып тастау
+                document.querySelectorAll('.tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                
+                // Белсенді бөлімді көрсету
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+                tab.classList.add('active');
+                
+                // Анимация бөлімінде анимацияны қайта бастау
+                if (tabId === 'theory-animation') {
+                    resetAnimation();
+                }
+            });
+        });
+        
+        // Анимацияны басқару
+        const animContainer = document.getElementById('anim-container');
+        const startAnimBtn = document.getElementById('start-anim');
+        const resetAnimBtn = document.getElementById('reset-anim');
+        
+        function startAnimation() {
+            resetAnimation();
+            
+            // Төрт бөліктен тұратын шеңбер сызу
+            const containerWidth = animContainer.offsetWidth;
+            const containerHeight = animContainer.offsetHeight;
+            const size = Math.min(containerWidth, containerHeight) * 0.6;
+            
+            // Бүтін шеңбер (3/4 бөлігі боялған)
+            const wholeCircle = document.createElement('div');
+            wholeCircle.className = 'shape circle';
+            wholeCircle.style.width = size + 'px';
+            wholeCircle.style.height = size + 'px';
+            wholeCircle.style.left = (containerWidth/2 - size - 20) + 'px';
+            wholeCircle.style.top = (containerHeight/2 - size/2) + 'px';
+            wholeCircle.style.backgroundColor = 'rgba(74, 0, 224, 0.3)';
+            
+            // 3/4 бөлігін көрсету үшін градиент
+            wholeCircle.style.background = 'conic-gradient(rgba(74, 0, 224, 0.6) 0deg 270deg, rgba(74, 0, 224, 0.2) 270deg 360deg)';
+            animContainer.appendChild(wholeCircle);
+            
+            // 1/2 бөлігіне сәйкес шеңбер
+            const halfCircle = document.createElement('div');
+            halfCircle.className = 'shape circle';
+            halfCircle.style.width = size + 'px';
+            halfCircle.style.height = size + 'px';
+            halfCircle.style.left = (containerWidth/2 + 20) + 'px';
+            halfCircle.style.top = (containerHeight/2 - size/2) + 'px';
+            halfCircle.style.background = 'conic-gradient(rgba(255, 100, 100, 0.6) 0deg 180deg, rgba(255, 100, 100, 0.2) 180deg 360deg)';
+            animContainer.appendChild(halfCircle);
+            
+            // Анимациялық нәтиже
+            setTimeout(() => {
+                const resultText = document.createElement('div');
+                resultText.style.position = 'absolute';
+                resultText.style.left = '50%';
+                resultText.style.top = '80%';
+                resultText.style.transform = 'translateX(-50%)';
+                resultText.style.fontSize = '1.5rem';
+                resultText.style.fontWeight = 'bold';
+                resultText.style.color = '#4A00E0';
+                resultText.innerHTML = 
+                    '<span class="fraction"><span class="numerator">3</span><span class="denominator">4</span></span> ÷ ' +
+                    '<span class="fraction"><span class="numerator">1</span><span class="denominator">2</span></span> = ' +
+                    '<span class="fraction"><span class="numerator">3</span><span class="denominator">2</span></span> = ' +
+                    '<span class="mixed-number">1<span class="fraction"><span class="numerator">1</span><span class="denominator">2</span></span></span>';
+                resultText.style.opacity = '0';
+                resultText.style.transition = 'opacity 1s';
+                animContainer.appendChild(resultText);
+                
+                setTimeout(() => {
+                    resultText.style.opacity = '1';
+                }, 500);
+            }, 2000);
+        }
+        
+        function resetAnimation() {
+            animContainer.innerHTML = '';
+        }
+        
+        startAnimBtn.addEventListener('click', startAnimation);
+        resetAnimBtn.addEventListener('click', resetAnimation);
+        
+        // Практикалық тапсырмаларды тексеру
+        document.getElementById('check-p1').addEventListener('click', function() {
+            const numerator = parseInt(document.getElementById('p1-num').value);
+            const denominator = parseInt(document.getElementById('p1-den').value);
+            const resultDiv = document.getElementById('result-p1');
+            
+            if (numerator === 8 && denominator === 15) {
+                resultDiv.innerHTML = 
+                    'Дұрыс! ' +
+                    '<span class="fraction"><span class="numerator">2</span><span class="denominator">5</span></span> ÷ ' +
+                    '<span class="fraction"><span class="numerator">3</span><span class="denominator">4</span></span> = ' +
+                    '<span class="fraction"><span class="numerator">2</span><span class="denominator">5</span></span> × ' +
+                    '<span class="fraction"><span class="numerator">4</span><span class="denominator">3</span></span> = ' +
+                    '<span class="fraction"><span class="numerator">8</span><span class="denominator">15</span></span>';
+                resultDiv.className = 'result correct';
+            } else {
+                resultDiv.innerHTML = 'Қате! Дұрыс жауап: <span class="fraction"><span class="numerator">8</span><span class="denominator">15</span></span>';
+                resultDiv.className = 'result incorrect';
+            }
+            resultDiv.style.display = 'block';
+        });
+        
+        document.getElementById('check-p2').addEventListener('click', function() {
+            const whole = parseInt(document.getElementById('p2-whole').value) || 0;
+            const numerator = parseInt(document.getElementById('p2-num').value);
+            const denominator = parseInt(document.getElementById('p2-den').value);
+            const resultDiv = document.getElementById('result-p2');
+            
+            if (whole === 1 && numerator === 7 && denominator === 8) {
+                resultDiv.innerHTML = 
+                    'Дұрыс! ' +
+                    '<span class="mixed-number">2<span class="fraction"><span class="numerator">1</span><span class="denominator">2</span></span></span> ÷ ' +
+                    '<span class="mixed-number">1<span class="fraction"><span class="numerator">1</span><span class="denominator">3</span></span></span> = ' +
+                    '<span class="fraction"><span class="numerator">5</span><span class="denominator">2</span></span> ÷ ' +
+                    '<span class="fraction"><span class="numerator">4</span><span class="denominator">3</span></span> = ' +
+                    '<span class="fraction"><span class="numerator">5</span><span class="denominator">2</span></span> × ' +
+                    '<span class="fraction"><span class="numerator">3</span><span class="denominator">4</span></span> = ' +
+                    '<span class="fraction"><span class="numerator">15</span><span class="denominator">8</span></span> = ' +
+                    '<span class="mixed-number">1<span class="fraction"><span class="numerator">7</span><span class="denominator">8</span></span></span>';
+                resultDiv.className = 'result correct';
+            } else {
+                resultDiv.innerHTML = 'Қате! Дұрыс жауап: <span class="mixed-number">1<span class="fraction"><span class="numerator">7</span><span class="denominator">8</span></span></span>';
+                resultDiv.className = 'result incorrect';
+            }
+            resultDiv.style.display = 'block';
+        });
+        
+        document.getElementById('check-p3').addEventListener('click', function() {
+            const answer = parseInt(document.getElementById('p3-answer').value);
+            const resultDiv = document.getElementById('result-p3');
+            
+            if (answer === 10) {
+                resultDiv.innerHTML = 
+                    'Дұрыс! ' +
+                    '<span class="mixed-number">3<span class="fraction"><span class="numerator">3</span><span class="denominator">4</span></span></span> ÷ ' +
+                    '<span class="fraction"><span class="numerator">3</span><span class="denominator">8</span></span> = ' +
+                    '<span class="fraction"><span class="numerator">15</span><span class="denominator">4</span></span> × ' +
+                    '<span class="fraction"><span class="numerator">8</span><span class="denominator">3</span></span> = ' +
+                    '<span class="fraction"><span class="numerator">120</span><span class="denominator">12</span></span> = ' +
+                    '<span class="mixed-number">10</span>';
+                resultDiv.className = 'result correct';
+            } else {
+                resultDiv.innerHTML = 'Қате! Дұрыс жауап: <span class="mixed-number">10</span> пакет';
+                resultDiv.className = 'result incorrect';
+            }
+            resultDiv.style.display = 'block';
+        });
+        
+        // Тестті тексеру
+        document.getElementById('submit-test').addEventListener('click', function() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            const q3 = document.querySelector('input[name="q3"]:checked');
+            const q4 = document.querySelector('input[name="q4"]:checked');
+            const resultDiv = document.getElementById('test-result');
+            
+            let score = 0;
+            let total = 4;
+            let feedback = '';
+            
+            if (q1 && q1.value === 'a') score++;
+            if (q2 && q2.value === 'a') score++;
+            if (q3 && q3.value === 'a') score++;
+            if (q4 && q4.value === 'b') score++;
+            
+            if (score === total) {
+                feedback = 'Керемет! Барлық жауаптар дұрыс!';
+                resultDiv.className = 'result correct';
+            } else if (score >= total/2) {
+                feedback = `Жақсы! ${score} сұраққа дұрыс жауап бердіңіз.`;
+                resultDiv.className = 'result correct';
+            } else {
+                feedback = `Қайталап көріңіз. ${score} сұраққа дұрыс жауап бердіңіз.`;
+                resultDiv.className = 'result incorrect';
+            }
+            
+            resultDiv.innerHTML = `
+                <h3>Тест нәтижесі: ${score}/${total}</h3>
+                <p>${feedback}</p>
+                <p><strong>Дұрыс жауаптар:</strong></p>
+                <ol>
+                    <li>a) <span class="fraction"><span class="numerator">5</span><span class="denominator">4</span></span></li>
+                    <li>a) <span class="mixed-number">1<span class="fraction"><span class="numerator">5</span><span class="denominator">9</span></span></span></li>
+                    <li>a) кері</li>
+                    <li>b) <span class="mixed-number">8</span></li>
+                </ol>
+            `;
+            resultDiv.style.display = 'block';
+        });
+        
+        // Бастапқы анимацияны көрсету
+        window.addEventListener('load', function() {
+            resetAnimation();
+        });
+    </script>
+</body>
+</html>

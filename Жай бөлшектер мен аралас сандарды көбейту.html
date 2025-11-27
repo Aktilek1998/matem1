@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бөлшектер мен аралас сандарды көбейту зертханасы</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(120, 119, 198, 0.3) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(255, 119, 198, 0.3) 0%, transparent 20%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 20%),
+                linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="10" y="50" font-family="Arial" font-size="14" fill="rgba(255,255,255,0.05)">½</text><text x="60" y="30" font-family="Arial" font-size="14" fill="rgba(255,255,255,0.05)">¼</text><text x="30" y="80" font-family="Arial" font-size="14" fill="rgba(255,255,255,0.05)">¾</text></svg>');
+            background-repeat: repeat;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #4a00e0, #8e2de2);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        header::after {
+            content: "½ × ¾ = ?";
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 1.5rem;
+            opacity: 0.7;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .page {
+            display: none;
+            padding: 20px;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .nav-btn {
+            background-color: #4a00e0;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background-color: #3800a8;
+        }
+        
+        .explanation {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            color: #4a00e0;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .step {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .step-title {
+            font-weight: bold;
+            color: #4a00e0;
+            margin-bottom: 8px;
+        }
+        
+        .example {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-style: italic;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        
+        .fraction {
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+            margin: 0 5px;
+        }
+        
+        .fraction span {
+            display: block;
+        }
+        
+        .fraction .numerator {
+            border-bottom: 1px solid #000;
+            padding: 0 5px;
+        }
+        
+        .fraction .denominator {
+            padding: 0 5px;
+        }
+        
+        .visualization {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .fraction-box {
+            width: 100px;
+            height: 100px;
+            margin: 0 10px;
+            position: relative;
+            border: 2px solid #4a00e0;
+        }
+        
+        .fraction-part {
+            position: absolute;
+            background-color: rgba(74, 0, 224, 0.3);
+            border: 1px solid #4a00e0;
+        }
+        
+        .operator {
+            font-size: 2rem;
+            margin: 0 15px;
+        }
+        
+        .practice-content {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .level-selector {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .level {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background-color: #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .level.active {
+            background-color: #4a00e0;
+            color: white;
+        }
+        
+        .problem {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+        
+        .problem-text {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .answer-input {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .fraction-input {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 10px;
+        }
+        
+        .fraction-input input {
+            width: 60px;
+            text-align: center;
+            padding: 8px;
+            border: 2px solid #4a00e0;
+            border-radius: 5px;
+            font-size: 1.2rem;
+        }
+        
+        .fraction-line {
+            width: 60px;
+            height: 2px;
+            background-color: #4a00e0;
+            margin: 5px 0;
+        }
+        
+        button {
+            background-color: #4a00e0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            margin-left: 20px;
+        }
+        
+        button:hover {
+            background-color: #3800a8;
+        }
+        
+        .feedback {
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .praise {
+            background-color: #fff3cd;
+            color: #856404;
+            animation: praise 0.5s ease-in-out;
+        }
+        
+        @keyframes praise {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .progress {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .progress-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #4a00e0;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .mixed-input {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        /* Анимация бөліміне арналған стильдер */
+        .animation-section {
+            margin: 30px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .animation-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .animation-visualization {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .animation-box {
+            width: 120px;
+            height: 120px;
+            margin: 10px;
+            position: relative;
+            border: 2px solid #4a00e0;
+            background-color: white;
+        }
+        
+        .animation-text {
+            font-size: 1.2rem;
+            margin: 10px 0;
+            text-align: center;
+            min-height: 30px;
+        }
+        
+        .animation-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .animation-btn {
+            background-color: #4a00e0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .animation-btn:hover {
+            background-color: #3800a8;
+        }
+        
+        .animation-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .animation-step {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .grid-cell {
+            position: absolute;
+            border: 1px solid rgba(74, 0, 224, 0.2);
+        }
+        
+        .highlighted {
+            background-color: rgba(255, 0, 0, 0.5);
+            animation: highlight 1s ease-in-out;
+        }
+        
+        @keyframes highlight {
+            0% { background-color: rgba(255, 0, 0, 0.2); }
+            50% { background-color: rgba(255, 0, 0, 0.7); }
+            100% { background-color: rgba(255, 0, 0, 0.5); }
+        }
+        
+        @media (max-width: 768px) {
+            .answer-input {
+                flex-direction: column;
+            }
+            
+            .fraction-input {
+                margin: 10px 0;
+            }
+            
+            button {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+            
+            .mixed-input {
+                flex-direction: column;
+            }
+            
+            .animation-visualization {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Бөлшектер мен Аралас Сандарды Көбейту</h1>
+            <div class="subtitle">Интерактивті математикалық зертхана</div>
+        </header>
+        
+        <!-- Түсіндіру беті -->
+        <div id="page1" class="page active">
+            <div class="explanation">
+                <h2>Бөлшектерді көбейту ережесі</h2>
+                
+                <div class="step">
+                    <div class="step-title">1-қадам: Бөлшектерді көбейту</div>
+                    <p>Бөлшектерді көбейту үшін алымдарды көбейтеміз және бөлімдерді көбейтеміз.</p>
+                    <div class="example">
+                        <div class="fraction">
+                            <span class="numerator">a</span>
+                            <span class="denominator">b</span>
+                        </div>
+                        ×
+                        <div class="fraction">
+                            <span class="numerator">c</span>
+                            <span class="denominator">d</span>
+                        </div>
+                        = 
+                        <div class="fraction">
+                            <span class="numerator">a × c</span>
+                            <span class="denominator">b × d</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-title">2-қадам: Қысқартып жазу (қажет болса)</div>
+                    <p>Алым мен бөлімнің ортақ көбейткіштері болса, қысқартып жазамыз.</p>
+                    <div class="example">
+                        <div class="fraction">
+                            <span class="numerator">6</span>
+                            <span class="denominator">8</span>
+                        </div>
+                        = 
+                        <div class="fraction">
+                            <span class="numerator">2 × 3</span>
+                            <span class="denominator">2 × 4</span>
+                        </div>
+                        = 
+                        <div class="fraction">
+                            <span class="numerator">3</span>
+                            <span class="denominator">4</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-title">3-қадам: Аралас сандарды көбейту</div>
+                    <p>Аралас сандарды бұрыс бөлшекке айналдырып, көбейтеміз.</p>
+                    <div class="example">
+                        2 <div class="fraction">
+                            <span class="numerator">1</span>
+                            <span class="denominator">3</span>
+                        </div>
+                        × 1 
+                        <div class="fraction">
+                            <span class="numerator">1</span>
+                            <span class="denominator">2</span>
+                        </div>
+                        = 
+                        <div class="fraction">
+                            <span class="numerator">7</span>
+                            <span class="denominator">3</span>
+                        </div>
+                        × 
+                        <div class="fraction">
+                            <span class="numerator">3</span>
+                            <span class="denominator">2</span>
+                        </div>
+                        = 
+                        <div class="fraction">
+                            <span class="numerator">21</span>
+                            <span class="denominator">6</span>
+                        </div>
+                        = 3 
+                        <div class="fraction">
+                            <span class="numerator">3</span>
+                            <span class="denominator">6</span>
+                        </div>
+                        = 3 
+                        <div class="fraction">
+                            <span class="numerator">1</span>
+                            <span class="denominator">2</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="visualization">
+                    <div class="fraction-box" id="box1">
+                        <!-- Бөлшек бөліктері мұнда болады -->
+                    </div>
+                    <div class="operator">×</div>
+                    <div class="fraction-box" id="box2">
+                        <!-- Бөлшек бөліктері мұнда болады -->
+                    </div>
+                    <div class="operator">=</div>
+                    <div class="fraction-box" id="box3">
+                        <!-- Нәтиже мұнда болады -->
+                    </div>
+                </div>
+                
+                <!-- Анимация бөлімі -->
+                <div class="animation-section">
+                    <h2>Бөлшектерді көбейту анимациясы</h2>
+                    <p>Төмендегі анимация арқылы бөлшектерді көбейту процесін көре аласыз.</p>
+                    
+                    <div class="animation-container">
+                        <div class="animation-step" id="animation-step">1-қадам: Бірінші бөлшекті көрсету</div>
+                        
+                        <div class="animation-visualization">
+                            <div class="animation-box" id="anim-box1"></div>
+                            <div class="operator">×</div>
+                            <div class="animation-box" id="anim-box2"></div>
+                            <div class="operator">=</div>
+                            <div class="animation-box" id="anim-box3"></div>
+                        </div>
+                        
+                        <div class="animation-text" id="animation-text">
+                            <div class="fraction">
+                                <span class="numerator">2</span>
+                                <span class="denominator">3</span>
+                            </div>
+                            ×
+                            <div class="fraction">
+                                <span class="numerator">3</span>
+                                <span class="denominator">4</span>
+                            </div>
+                            = 
+                            <div class="fraction">
+                                <span class="numerator">6</span>
+                                <span class="denominator">12</span>
+                            </div>
+                        </div>
+                        
+                        <div class="animation-controls">
+                            <button class="animation-btn" id="prev-step">← Алдыңғы</button>
+                            <button class="animation-btn" id="play-pause">Бастау</button>
+                            <button class="animation-btn" id="next-step">Келесі →</button>
+                            <button class="animation-btn" id="reset-anim">Қайта бастау</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <button class="nav-btn" onclick="showPage(2)">Тәжірибе жасау →</button>
+            </div>
+        </div>
+        
+        <!-- Тәжірибе беті -->
+        <div id="page2" class="page">
+            <div class="practice-content">
+                <h2>Тәжірибе жасау</h2>
+                
+                <div class="level-selector">
+                    <div class="level active" data-level="1">Бастапқы</div>
+                    <div class="level" data-level="2">Орташа</div>
+                    <div class="level" data-level="3">Күрделі</div>
+                </div>
+                
+                <div class="problem">
+                    <div class="problem-text" id="problem-text">
+                        <div class="fraction">
+                            <span class="numerator">1</span>
+                            <span class="denominator">2</span>
+                        </div>
+                        ×
+                        <div class="fraction">
+                            <span class="numerator">1</span>
+                            <span class="denominator">3</span>
+                        </div>
+                        = ?
+                    </div>
+                    
+                    <div class="answer-input">
+                        <div id="simple-input">
+                            <div class="fraction-input">
+                                <input type="number" id="numerator" placeholder="" value="">
+                                <div class="fraction-line"></div>
+                                <input type="number" id="denominator" placeholder="" value="">
+                            </div>
+                        </div>
+                        
+                        <div id="mixed-input" style="display: none;">
+                            <div class="mixed-input">
+                                <input type="number" id="whole" placeholder="Бүтін" style="width: 80px;">
+                                <div class="fraction-input">
+                                    <input type="number" id="mixed-numerator" placeholder="" value="">
+                                    <div class="fraction-line"></div>
+                                    <input type="number" id="mixed-denominator" placeholder="" value="">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="check-answer">Тексеру</button>
+                    </div>
+                    
+                    <div class="feedback" id="feedback"></div>
+                </div>
+                
+                <div class="progress">
+                    <div class="progress-item">
+                        <div>Дұрыс жауаптар</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="correct-progress" style="width: 0%"></div>
+                        </div>
+                        <div id="correct-count">0</div>
+                    </div>
+                    
+                    <div class="progress-item">
+                        <div>Жалпы сұрақтар</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="total-progress" style="width: 0%"></div>
+                        </div>
+                        <div id="total-count">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <button class="nav-btn" onclick="showPage(1)">← Түсіндіруге оралу</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Анимация үшін бөлшектерді көрсету
+        function visualizeFraction(boxId, numerator, denominator, color) {
+            const box = document.getElementById(boxId);
+            box.innerHTML = '';
+            
+            // Бөлшек мәнін жазу
+            const fractionText = document.createElement('div');
+            fractionText.innerHTML = `
+                <div class="fraction">
+                    <span class="numerator">${numerator}</span>
+                    <span class="denominator">${denominator}</span>
+                </div>
+            `;
+            fractionText.style.position = 'absolute';
+            fractionText.style.bottom = '-40px';
+            fractionText.style.width = '100%';
+            fractionText.style.textAlign = 'center';
+            box.appendChild(fractionText);
+            
+            // Бөлшек бөліктерін көрсету
+            for (let i = 0; i < denominator; i++) {
+                const part = document.createElement('div');
+                part.className = 'fraction-part';
+                
+                if (boxId === 'box1' || boxId === 'box2') {
+                    // Бірінші және екінші бөлшектер үшін тік бөлу
+                    part.style.width = '100%';
+                    part.style.height = `${100/denominator}%`;
+                    part.style.top = `${i * (100/denominator)}%`;
+                    
+                    if (i < numerator) {
+                        part.style.backgroundColor = color || 'rgba(74, 0, 224, 0.5)';
+                    } else {
+                        part.style.backgroundColor = 'transparent';
+                    }
+                } else {
+                    // Нәтиже үшін басқаша көрсету
+                    part.style.width = `${100/Math.ceil(Math.sqrt(denominator))}%`;
+                    part.style.height = `${100/Math.ceil(Math.sqrt(denominator))}%`;
+                    part.style.left = `${(i % Math.ceil(Math.sqrt(denominator))) * (100/Math.ceil(Math.sqrt(denominator)))}%`;
+                    part.style.top = `${Math.floor(i / Math.ceil(Math.sqrt(denominator))) * (100/Math.ceil(Math.sqrt(denominator)))}%`;
+                    
+                    if (i < numerator) {
+                        part.style.backgroundColor = color || 'rgba(74, 0, 224, 0.5)';
+                    } else {
+                        part.style.backgroundColor = 'transparent';
+                    }
+                }
+                
+                box.appendChild(part);
+            }
+        }
+
+        // Бастапқы анимацияны орнату
+        setTimeout(() => {
+            visualizeFraction('box1', 1, 2, 'rgba(74, 0, 224, 0.5)');
+            visualizeFraction('box2', 1, 3, 'rgba(255, 0, 0, 0.5)');
+            visualizeFraction('box3', 1, 6, 'rgba(0, 128, 0, 0.5)');
+        }, 500);
+
+        // Деңгейлер мен есептер
+        const levels = {
+            1: [
+                { 
+                    problem: {
+                        left: { numerator: 1, denominator: 2 },
+                        right: { numerator: 1, denominator: 3 }
+                    }, 
+                    answer: { numerator: 1, denominator: 6 } 
+                },
+                { 
+                    problem: {
+                        left: { numerator: 2, denominator: 3 },
+                        right: { numerator: 1, denominator: 4 }
+                    }, 
+                    answer: { numerator: 2, denominator: 12, simplified: { numerator: 1, denominator: 6 } } 
+                },
+                { 
+                    problem: {
+                        left: { numerator: 3, denominator: 4 },
+                        right: { numerator: 1, denominator: 2 }
+                    }, 
+                    answer: { numerator: 3, denominator: 8 } 
+                },
+                { 
+                    problem: {
+                        left: { numerator: 1, denominator: 5 },
+                        right: { numerator: 2, denominator: 3 }
+                    }, 
+                    answer: { numerator: 2, denominator: 15 } 
+                },
+                { 
+                    problem: {
+                        left: { numerator: 2, denominator: 5 },
+                        right: { numerator: 3, denominator: 7 }
+                    }, 
+                    answer: { numerator: 6, denominator: 35 } 
+                }
+            ],
+            2: [
+                { 
+                    problem: {
+                        left: { numerator: 3, denominator: 4 },
+                        right: { numerator: 2, denominator: 3 }
+                    }, 
+                    answer: { numerator: 6, denominator: 12, simplified: { numerator: 1, denominator: 2 } } 
+                },
+                { 
+                    problem: {
+                        left: { numerator: 5, denominator: 6 },
+                        right: { numerator: 3, denominator: 5 }
+                    }, 
+                    answer: { numerator: 15, denominator: 30, simplified: { numerator: 1, denominator: 2 } } 
+                },
+                { 
+                    problem: {
+                        left: { numerator: 4, denominator: 7 },
+                        right: { numerator: 2, denominator: 3 }
+                    }, 
+                    answer: { numerator: 8, denominator: 21 } 
+                },
+                { 
+                    problem: {
+                        left: { whole: 2, numerator: 1, denominator: 2 },
+                        right: { numerator: 1, denominator: 3 }
+                    }, 
+                    answer: { numerator: 5, denominator: 6 } 
+                },
+                { 
+                    problem: {
+                        left: { whole: 1, numerator: 1, denominator: 4 },
+                        right: { numerator: 2, denominator: 3 }
+                    }, 
+                    answer: { numerator: 10, denominator: 12, simplified: { numerator: 5, denominator: 6 } } 
+                }
+            ],
+            3: [
+                { 
+                    problem: {
+                        left: { whole: 2, numerator: 1, denominator: 3 },
+                        right: { whole: 1, numerator: 1, denominator: 2 }
+                    }, 
+                    answer: { numerator: 21, denominator: 6, simplified: { numerator: 7, denominator: 2 }, mixed: { whole: 3, numerator: 1, denominator: 2 } } 
+                },
+                { 
+                    problem: {
+                        left: { whole: 3, numerator: 2, denominator: 5 },
+                        right: { whole: 2, numerator: 1, denominator: 4 }
+                    }, 
+                    answer: { numerator: 153, denominator: 20, simplified: { numerator: 153, denominator: 20 }, mixed: { whole: 7, numerator: 13, denominator: 20 } } 
+                },
+                { 
+                    problem: {
+                        left: { whole: 1, numerator: 3, denominator: 7 },
+                        right: { whole: 2, numerator: 1, denominator: 2 }
+                    }, 
+                    answer: { numerator: 50, denominator: 14, simplified: { numerator: 25, denominator: 7 }, mixed: { whole: 3, numerator: 4, denominator: 7 } } 
+                },
+                { 
+                    problem: {
+                        left: { whole: 4, numerator: 1, denominator: 2 },
+                        right: { whole: 3, numerator: 1, denominator: 3 }
+                    }, 
+                    answer: { numerator: 45, denominator: 6, simplified: { numerator: 15, denominator: 2 }, mixed: { whole: 7, numerator: 1, denominator: 2 } } 
+                },
+                { 
+                    problem: {
+                        left: { whole: 2, numerator: 2, denominator: 3 },
+                        right: { whole: 1, numerator: 3, denominator: 4 }
+                    }, 
+                    answer: { numerator: 56, denominator: 12, simplified: { numerator: 14, denominator: 3 }, mixed: { whole: 4, numerator: 2, denominator: 3 } } 
+                }
+            ]
+        };
+
+        // Мадақтау сөздер
+        const praiseMessages = [
+            "Керемет! Сен бөлшектерді көбейтуді жақсы түсінесің!",
+            "Тамаша! Математика сенің күшің!",
+            "Жақсы жұмыс! Осылай жалғастыр!",
+            "Керемет! Сен математиканың шеберісің!",
+            "Алға! Сен бұл тақырыпты меңгердің!",
+            "Тамаша! Бөлшектер сенің үшін оңай!",
+            "Керемет! Математикалық ойлау қабілетің тамаша!",
+            "Жақсы! Сен бүгін керемет жұмыс істедің!"
+        ];
+
+        // Айнымалылар
+        let currentLevel = 1;
+        let currentProblemIndex = 0;
+        let correctAnswers = 0;
+        let totalProblems = 0;
+
+        // DOM элементтері
+        const levelElements = document.querySelectorAll('.level');
+        const problemTextElement = document.getElementById('problem-text');
+        const numeratorInput = document.getElementById('numerator');
+        const denominatorInput = document.getElementById('denominator');
+        const wholeInput = document.getElementById('whole');
+        const mixedNumeratorInput = document.getElementById('mixed-numerator');
+        const mixedDenominatorInput = document.getElementById('mixed-denominator');
+        const simpleInputDiv = document.getElementById('simple-input');
+        const mixedInputDiv = document.getElementById('mixed-input');
+        const checkButton = document.getElementById('check-answer');
+        const feedbackElement = document.getElementById('feedback');
+        const correctCountElement = document.getElementById('correct-count');
+        const totalCountElement = document.getElementById('total-count');
+        const correctProgressElement = document.getElementById('correct-progress');
+        const totalProgressElement = document.getElementById('total-progress');
+
+        // Беттерді ауыстыру функциясы
+        function showPage(pageNumber) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(`page${pageNumber}`).classList.add('active');
+        }
+
+        // Деңгейді таңдау
+        levelElements.forEach(level => {
+            level.addEventListener('click', () => {
+                levelElements.forEach(l => l.classList.remove('active'));
+                level.classList.add('active');
+                currentLevel = parseInt(level.getAttribute('data-level'));
+                currentProblemIndex = 0;
+                loadProblem();
+            });
+        });
+
+        // Есепті жүктеу
+        function loadProblem() {
+            const problems = levels[currentLevel];
+            if (currentProblemIndex >= problems.length) {
+                currentProblemIndex = 0;
+            }
+            
+            const problem = problems[currentProblemIndex];
+            
+            // Есепті көрсету
+            let problemHTML = '';
+            
+            if (problem.problem.left.whole) {
+                problemHTML += `${problem.problem.left.whole} `;
+            }
+            
+            problemHTML += `
+                <div class="fraction">
+                    <span class="numerator">${problem.problem.left.numerator}</span>
+                    <span class="denominator">${problem.problem.left.denominator}</span>
+                </div>
+                ×
+            `;
+            
+            if (problem.problem.right.whole) {
+                problemHTML += `${problem.problem.right.whole} `;
+            }
+            
+            problemHTML += `
+                <div class="fraction">
+                    <span class="numerator">${problem.problem.right.numerator}</span>
+                    <span class="denominator">${problem.problem.right.denominator}</span>
+                </div>
+                = ?
+            `;
+            
+            problemTextElement.innerHTML = problemHTML;
+            
+            // Енгізу өрістерін тазалау
+            numeratorInput.value = '';
+            denominatorInput.value = '';
+            wholeInput.value = '';
+            mixedNumeratorInput.value = '';
+            mixedDenominatorInput.value = '';
+            feedbackElement.textContent = '';
+            feedbackElement.className = 'feedback';
+            
+            // Есеп түріне қарай енгізу өрісін таңдау
+            if (problem.problem.left.whole || problem.problem.right.whole) {
+                simpleInputDiv.style.display = 'none';
+                mixedInputDiv.style.display = 'block';
+            } else {
+                simpleInputDiv.style.display = 'block';
+                mixedInputDiv.style.display = 'none';
+            }
+        }
+
+        // Жауапты тексеру
+        checkButton.addEventListener('click', checkAnswer);
+
+        function checkAnswer() {
+            const problems = levels[currentLevel];
+            const problem = problems[currentProblemIndex];
+            const answer = problem.answer;
+            
+            let isCorrect = false;
+            let userAnswer = {};
+            
+            // Енгізілген жауапты алу
+            if (problem.problem.left.whole || problem.problem.right.whole) {
+                // Аралас сан есебі
+                const whole = parseInt(wholeInput.value);
+                const mixedNumerator = parseInt(mixedNumeratorInput.value);
+                const mixedDenominator = parseInt(mixedDenominatorInput.value);
+                
+                if (isNaN(whole) || isNaN(mixedNumerator) || isNaN(mixedDenominator)) {
+                    feedbackElement.textContent = 'Барлық өрістерді толтырыңыз!';
+                    feedbackElement.className = 'feedback incorrect';
+                    return;
+                }
+                
+                userAnswer = { whole, numerator: mixedNumerator, denominator: mixedDenominator };
+                
+                // Жауапты тексеру
+                if (answer.mixed) {
+                    if (whole === answer.mixed.whole && 
+                        mixedNumerator === answer.mixed.numerator && 
+                        mixedDenominator === answer.mixed.denominator) {
+                        isCorrect = true;
+                    }
+                } else {
+                    // Аралас санды бұрыс бөлшекке айналдыру
+                    const improperNumerator = whole * mixedDenominator + mixedNumerator;
+                    if (improperNumerator === answer.numerator && mixedDenominator === answer.denominator) {
+                        isCorrect = true;
+                    } else if (answer.simplified && 
+                               improperNumerator === answer.simplified.numerator && 
+                               mixedDenominator === answer.simplified.denominator) {
+                        isCorrect = true;
+                    }
+                }
+            } else {
+                // Жай бөлшек есебі
+                const numerator = parseInt(numeratorInput.value);
+                const denominator = parseInt(denominatorInput.value);
+                
+                if (isNaN(numerator) || isNaN(denominator)) {
+                    feedbackElement.textContent = 'Алым мен бөлімді енгізіңіз!';
+                    feedbackElement.className = 'feedback incorrect';
+                    return;
+                }
+                
+                userAnswer = { numerator, denominator };
+                
+                // Жауапты тексеру
+                if (numerator === answer.numerator && denominator === answer.denominator) {
+                    isCorrect = true;
+                } else if (answer.simplified && 
+                           numerator === answer.simplified.numerator && 
+                           denominator === answer.simplified.denominator) {
+                    isCorrect = true;
+                }
+            }
+            
+            totalProblems++;
+            
+            if (isCorrect) {
+                correctAnswers++;
+                const randomPraise = praiseMessages[Math.floor(Math.random() * praiseMessages.length)];
+                feedbackElement.textContent = randomPraise;
+                feedbackElement.className = 'feedback correct praise';
+                
+                // Келесі есепке өту
+                setTimeout(() => {
+                    currentProblemIndex++;
+                    loadProblem();
+                }, 3000);
+            } else {
+                feedbackElement.textContent = 'Қате! Қайтадан байқап көріңіз.';
+                feedbackElement.className = 'feedback incorrect';
+                
+                // Дұрыс жауапты көрсету
+                setTimeout(() => {
+                    let correctAnswer = '';
+                    if (answer.mixed) {
+                        correctAnswer = `${answer.mixed.whole} ${answer.mixed.numerator}/${answer.mixed.denominator}`;
+                    } else if (answer.simplified) {
+                        correctAnswer = `${answer.simplified.numerator}/${answer.simplified.denominator}`;
+                    } else {
+                        correctAnswer = `${answer.numerator}/${answer.denominator}`;
+                    }
+                    feedbackElement.textContent = `Дұрыс жауап: ${correctAnswer}`;
+                }, 1500);
+            }
+            
+            // Статистиканы жаңарту
+            updateStats();
+        }
+
+        // Статистиканы жаңарту
+        function updateStats() {
+            correctCountElement.textContent = correctAnswers;
+            totalCountElement.textContent = totalProblems;
+            
+            const correctPercentage = totalProblems > 0 ? (correctAnswers / totalProblems) * 100 : 0;
+            correctProgressElement.style.width = `${correctPercentage}%`;
+            totalProgressElement.style.width = '100%';
+        }
+
+        // Бастапқы есепті жүктеу
+        loadProblem();
+
+        // Анимация бөлімі
+        const animBox1 = document.getElementById('anim-box1');
+        const animBox2 = document.getElementById('anim-box2');
+        const animBox3 = document.getElementById('anim-box3');
+        const animStepText = document.getElementById('animation-step');
+        const animText = document.getElementById('animation-text');
+        const prevStepBtn = document.getElementById('prev-step');
+        const playPauseBtn = document.getElementById('play-pause');
+        const nextStepBtn = document.getElementById('next-step');
+        const resetAnimBtn = document.getElementById('reset-anim');
+
+        let currentStep = 0;
+        let isPlaying = false;
+        let animationInterval;
+
+        const animationSteps = [
+            {
+                title: "1-қадам: Бірінші бөлшекті көрсету",
+                text: '<div class="fraction"><span class="numerator">2</span><span class="denominator">3</span></div>',
+                action: () => showFirstFraction()
+            },
+            {
+                title: "2-қадам: Екінші бөлшекті көрсету",
+                text: '<div class="fraction"><span class="numerator">2</span><span class="denominator">3</span></div> × <div class="fraction"><span class="numerator">3</span><span class="denominator">4</span></div>',
+                action: () => showSecondFraction()
+            },
+            {
+                title: "3-қадам: Бөлшектерді көбейту",
+                text: '<div class="fraction"><span class="numerator">2</span><span class="denominator">3</span></div> × <div class="fraction"><span class="numerator">3</span><span class="denominator">4</span></div> = <div class="fraction"><span class="numerator">2×3</span><span class="denominator">3×4</span></div>',
+                action: () => showMultiplication()
+            },
+            {
+                title: "4-қадам: Нәтижені есептеу",
+                text: '<div class="fraction"><span class="numerator">2</span><span class="denominator">3</span></div> × <div class="fraction"><span class="numerator">3</span><span class="denominator">4</span></div> = <div class="fraction"><span class="numerator">6</span><span class="denominator">12</span></div>',
+                action: () => showResult()
+            },
+            {
+                title: "5-қадам: Бөлшекті қысқарту",
+                text: '<div class="fraction"><span class="numerator">2</span><span class="denominator">3</span></div> × <div class="fraction"><span class="numerator">3</span><span class="denominator">4</span></div> = <div class="fraction"><span class="numerator">1</span><span class="denominator">2</span></div>',
+                action: () => showSimplification()
+            }
+        ];
+
+        function showFirstFraction() {
+            animBox1.innerHTML = '';
+            animBox2.innerHTML = '';
+            animBox3.innerHTML = '';
+            
+            // Бірінші бөлшекті көрсету
+            for (let i = 0; i < 3; i++) {
+                const part = document.createElement('div');
+                part.className = 'fraction-part';
+                part.style.width = '100%';
+                part.style.height = `${100/3}%`;
+                part.style.top = `${i * (100/3)}%`;
+                
+                if (i < 2) {
+                    part.style.backgroundColor = 'rgba(74, 0, 224, 0.5)';
+                } else {
+                    part.style.backgroundColor = 'transparent';
+                }
+                
+                animBox1.appendChild(part);
+            }
+            
+            // Бөлшек мәнін жазу
+            const fractionText1 = document.createElement('div');
+            fractionText1.innerHTML = `
+                <div class="fraction">
+                    <span class="numerator">2</span>
+                    <span class="denominator">3</span>
+                </div>
+            `;
+            fractionText1.style.position = 'absolute';
+            fractionText1.style.bottom = '-40px';
+            fractionText1.style.width = '100%';
+            fractionText1.style.textAlign = 'center';
+            animBox1.appendChild(fractionText1);
+        }
+
+        function showSecondFraction() {
+            animBox2.innerHTML = '';
+            
+            // Екінші бөлшекті көрсету
+            for (let i = 0; i < 4; i++) {
+                const part = document.createElement('div');
+                part.className = 'fraction-part';
+                part.style.width = `${100/4}%`;
+                part.style.height = '100%';
+                part.style.left = `${i * (100/4)}%`;
+                
+                if (i < 3) {
+                    part.style.backgroundColor = 'rgba(255, 0, 0, 0.5)';
+                } else {
+                    part.style.backgroundColor = 'transparent';
+                }
+                
+                animBox2.appendChild(part);
+            }
+            
+            // Бөлшек мәнін жазу
+            const fractionText2 = document.createElement('div');
+            fractionText2.innerHTML = `
+                <div class="fraction">
+                    <span class="numerator">3</span>
+                    <span class="denominator">4</span>
+                </div>
+            `;
+            fractionText2.style.position = 'absolute';
+            fractionText2.style.bottom = '-40px';
+            fractionText2.style.width = '100%';
+            fractionText2.style.textAlign = 'center';
+            animBox2.appendChild(fractionText2);
+        }
+
+        function showMultiplication() {
+            animBox3.innerHTML = '';
+            
+            // Көбейту процесін көрсету
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 4; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.style.width = `${100/4}%`;
+                    cell.style.height = `${100/3}%`;
+                    cell.style.left = `${j * (100/4)}%`;
+                    cell.style.top = `${i * (100/3)}%`;
+                    
+                    // Бірінші бөлшектен бөліктерді белгілеу
+                    if (i < 2) {
+                        cell.style.backgroundColor = 'rgba(74, 0, 224, 0.2)';
+                    }
+                    
+                    // Екінші бөлшектен бөліктерді белгілеу
+                    if (j < 3) {
+                        if (cell.style.backgroundColor) {
+                            cell.style.backgroundColor = 'rgba(255, 0, 0, 0.4)';
+                        } else {
+                            cell.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
+                        }
+                    }
+                    
+                    // Екі бөлшектің қиылысуын белгілеу
+                    if (i < 2 && j < 3) {
+                        cell.classList.add('highlighted');
+                    }
+                    
+                    animBox3.appendChild(cell);
+                }
+            }
+            
+            // Бөлшек мәнін жазу
+            const fractionText3 = document.createElement('div');
+            fractionText3.innerHTML = `
+                <div class="fraction">
+                    <span class="numerator">2×3</span>
+                    <span class="denominator">3×4</span>
+                </div>
+            `;
+            fractionText3.style.position = 'absolute';
+            fractionText3.style.bottom = '-40px';
+            fractionText3.style.width = '100%';
+            fractionText3.style.textAlign = 'center';
+            animBox3.appendChild(fractionText3);
+        }
+
+        function showResult() {
+            animBox3.innerHTML = '';
+            
+            // Нәтижені көрсету
+            for (let i = 0; i < 12; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                cell.style.width = `${100/4}%`;
+                cell.style.height = `${100/3}%`;
+                cell.style.left = `${(i % 4) * (100/4)}%`;
+                cell.style.top = `${Math.floor(i / 4) * (100/3)}%`;
+                
+                if (i < 6) {
+                    cell.classList.add('highlighted');
+                }
+                
+                animBox3.appendChild(cell);
+            }
+            
+            // Бөлшек мәнін жазу
+            const fractionText3 = document.createElement('div');
+            fractionText3.innerHTML = `
+                <div class="fraction">
+                    <span class="numerator">6</span>
+                    <span class="denominator">12</span>
+                </div>
+            `;
+            fractionText3.style.position = 'absolute';
+            fractionText3.style.bottom = '-40px';
+            fractionText3.style.width = '100%';
+            fractionText3.style.textAlign = 'center';
+            animBox3.appendChild(fractionText3);
+        }
+
+        function showSimplification() {
+            animBox3.innerHTML = '';
+            
+            // Қысқартылған нәтижені көрсету
+            for (let i = 0; i < 2; i++) {
+                const part = document.createElement('div');
+                part.className = 'fraction-part';
+                part.style.width = '100%';
+                part.style.height = `${100/2}%`;
+                part.style.top = `${i * (100/2)}%`;
+                
+                if (i < 1) {
+                    part.style.backgroundColor = 'rgba(0, 128, 0, 0.5)';
+                } else {
+                    part.style.backgroundColor = 'transparent';
+                }
+                
+                animBox3.appendChild(part);
+            }
+            
+            // Бөлшек мәнін жазу
+            const fractionText3 = document.createElement('div');
+            fractionText3.innerHTML = `
+                <div class="fraction">
+                    <span class="numerator">1</span>
+                    <span class="denominator">2</span>
+                </div>
+            `;
+            fractionText3.style.position = 'absolute';
+            fractionText3.style.bottom = '-40px';
+            fractionText3.style.width = '100%';
+            fractionText3.style.textAlign = 'center';
+            animBox3.appendChild(fractionText3);
+        }
+
+        function updateAnimationStep() {
+            animStepText.textContent = animationSteps[currentStep].title;
+            animText.innerHTML = animationSteps[currentStep].text;
+            animationSteps[currentStep].action();
+            
+            // Түймелерді жаңарту
+            prevStepBtn.disabled = currentStep === 0;
+            nextStepBtn.disabled = currentStep === animationSteps.length - 1;
+        }
+
+        function nextStep() {
+            if (currentStep < animationSteps.length - 1) {
+                currentStep++;
+                updateAnimationStep();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                updateAnimationStep();
+            }
+        }
+
+        function playPauseAnimation() {
+            if (isPlaying) {
+                // Тоқтату
+                clearInterval(animationInterval);
+                playPauseBtn.textContent = 'Бастау';
+                isPlaying = false;
+            } else {
+                // Ойнату
+                playPauseBtn.textContent = 'Тоқтату';
+                isPlaying = true;
+                
+                // Егер соңғы қадамда болса, басынан бастау
+                if (currentStep === animationSteps.length - 1) {
+                    currentStep = -1;
+                }
+                
+                animationInterval = setInterval(() => {
+                    if (currentStep < animationSteps.length - 1) {
+                        currentStep++;
+                        updateAnimationStep();
+                    } else {
+                        // Соңғы қадамға жеткенде тоқтату
+                        clearInterval(animationInterval);
+                        playPauseBtn.textContent = 'Бастау';
+                        isPlaying = false;
+                    }
+                }, 3000);
+            }
+        }
+
+        function resetAnimation() {
+            currentStep = 0;
+            updateAnimationStep();
+            
+            if (isPlaying) {
+                clearInterval(animationInterval);
+                playPauseBtn.textContent = 'Бастау';
+                isPlaying = false;
+            }
+        }
+
+        // Анимацияны басқару түймелеріне оқиғаларды қосу
+        prevStepBtn.addEventListener('click', prevStep);
+        nextStepBtn.addEventListener('click', nextStep);
+        playPauseBtn.addEventListener('click', playPauseAnimation);
+        resetAnimBtn.addEventListener('click', resetAnimation);
+
+        // Бастапқы анимацияны орнату
+        updateAnimationStep();
+    </script>
+</body>
+</html>

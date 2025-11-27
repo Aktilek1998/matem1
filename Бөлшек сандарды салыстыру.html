@@ -1,0 +1,2046 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бөлшектер мен аралас сандарды салыстыру - Виртуалды зертхана</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #e63946;
+            --math-bg: #7209b7;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Neue', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        
+        header {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            border-bottom: 8px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.1"><text x="50%" y="50%" font-size="20" text-anchor="middle" dominant-baseline="middle">½ ⅓ ¼ ⅔ ¾</text></svg>');
+            background-repeat: repeat;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .subtitle {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            position: relative;
+        }
+        
+        .lab-switcher {
+            display: flex;
+            justify-content: center;
+            background: var(--light);
+            padding: 15px;
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .lab-btn {
+            background: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 0 10px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark);
+        }
+        
+        .lab-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .lab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .lab-content {
+            display: none;
+            padding: 30px;
+        }
+        
+        .lab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .lab-title {
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 2.2rem;
+            border-bottom: 3px dashed var(--accent);
+            padding-bottom: 15px;
+        }
+        
+        .workspace {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .control-panel {
+            flex: 1;
+            min-width: 350px;
+            background: var(--light);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border: 3px solid var(--primary);
+        }
+        
+        .visualization-panel {
+            flex: 2;
+            min-width: 350px;
+            background: var(--light);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border: 3px solid var(--accent);
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: bold;
+            color: var(--secondary);
+            font-size: 1.2rem;
+        }
+        
+        .number-inputs {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .fraction-input {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .fraction-input input {
+            width: 80px;
+            padding: 12px;
+            border: 3px solid var(--primary);
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            background: white;
+            transition: all 0.3s;
+        }
+        
+        .fraction-input input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 12px rgba(247, 37, 133, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .fraction-divider-input {
+            width: 100%;
+            height: 3px;
+            background: var(--dark);
+            margin: 5px 0;
+        }
+        
+        .mixed-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .mixed-whole-input {
+            width: 60px;
+            padding: 12px;
+            border: 3px solid var(--warning);
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            background: white;
+            transition: all 0.3s;
+        }
+        
+        .mixed-whole-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 12px rgba(247, 37, 133, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .btn {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(2px);
+        }
+        
+        .btn-accent {
+            background: linear-gradient(90deg, var(--accent), #b5179e);
+        }
+        
+        .visualization {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .fraction-card {
+            text-align: center;
+            flex: 1;
+            min-width: 250px;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border: 3px solid var(--success);
+            transition: all 0.3s;
+        }
+        
+        .fraction-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .fraction-title {
+            color: var(--secondary);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            background: var(--light);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        
+        .circle-container {
+            margin: 20px auto;
+            width: 180px;
+            height: 180px;
+            position: relative;
+        }
+        
+        .circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(var(--success) 0% var(--fill-percentage, 0%), #e0e0e0 var(--fill-percentage, 0%) 100%);
+            position: relative;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .circle::before {
+            content: '';
+            position: absolute;
+            width: 70%;
+            height: 70%;
+            background: white;
+            border-radius: 50%;
+            top: 15%;
+            left: 15%;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .bar-container {
+            margin: 20px auto;
+            width: 100%;
+            height: 40px;
+            background: #e0e0e0;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #4cc9f0);
+            width: var(--fill-percentage, 0%);
+            transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .fraction-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--dark);
+            margin-top: 15px;
+            background: var(--light);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        
+        .result {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 20px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, var(--success), #4cc9f0);
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        
+        .math-symbol {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin: 0 15px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .explanation {
+            margin-top: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 20px;
+            border-left: 8px solid var(--primary);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .explanation h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .explanation p {
+            line-height: 1.7;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .steps {
+            margin-top: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 20px;
+            border-left: 8px solid var(--accent);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .steps h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .steps ol {
+            margin-left: 25px;
+            font-size: 1.2rem;
+            line-height: 1.7;
+        }
+        
+        .steps li {
+            margin-bottom: 12px;
+            padding-left: 10px;
+        }
+        
+        .whole-part {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .whole-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--warning);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .fraction-part {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .fraction-circle {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+        
+        .empty-circle {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 3px dashed #ccc;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Бөлшек сызығы стильдері */
+        .fraction-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 10px 0;
+        }
+        
+        .fraction-display .numerator {
+            padding: 5px 15px;
+            background: var(--light);
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .fraction-display .divider {
+            width: 100%;
+            height: 4px;
+            background: var(--dark);
+            margin: 2px 0;
+        }
+        
+        .fraction-display .denominator {
+            padding: 5px 15px;
+            background: var(--light);
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .mixed-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 10px 0;
+        }
+        
+        .mixed-display .whole {
+            padding: 5px 10px;
+            background: var(--warning);
+            color: white;
+            border-radius: 8px;
+        }
+        
+        .comparison-result {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .comparison-result .fraction-display {
+            margin: 0;
+        }
+        
+        /* Сандар сызығы контейнері */
+        .number-line-container {
+            width: 100%;
+            height: 150px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            cursor: grab;
+            user-select: none;
+        }
+        
+        .number-line-container:active {
+            cursor: grabbing;
+        }
+        
+        .number-line-wrapper {
+            width: 2000px; /* Кеңейтілген сызық */
+            height: 100%;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        
+        .number-line {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .number-line-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .number-line-marker {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            height: 20px;
+            background: #999;
+            transform: translateX(-50%);
+        }
+        
+        .number-line-label {
+            position: absolute;
+            top: 25px;
+            transform: translateX(-50%);
+            font-weight: bold;
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .number-line-point {
+            position: absolute;
+            top: 50%;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        
+        .number-line-point:hover {
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+        
+        .number-line-point-value {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+            font-size: 1rem;
+            white-space: nowrap;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 3px 8px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .number-line-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .zoom-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .zoom-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.05);
+        }
+        
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: var(--dark);
+        }
+        
+        @media (max-width: 768px) {
+            .workspace {
+                flex-direction: column;
+            }
+            
+            .visualization {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .lab-btn {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+            
+            .number-line-container {
+                height: 120px;
+            }
+            
+            .fraction-display, .mixed-display {
+                font-size: 2rem;
+            }
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 1.1rem;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+        
+        .comparison-table tr:hover {
+            background: #e3f2fd;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            color: white;
+            font-size: 1.1rem;
+        }
+        
+        /* Ойын бөлімі стильдері */
+        .game-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .game-btn {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 18px 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1.4rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.5s;
+        }
+        
+        .game-btn:hover::before {
+            left: 100%;
+        }
+        
+        .game-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .game-btn.correct {
+            background: linear-gradient(90deg, var(--success), #4cc9f0);
+            animation: correctPulse 0.5s;
+        }
+        
+        .game-btn.incorrect {
+            background: linear-gradient(90deg, var(--danger), #e63946);
+            animation: incorrectShake 0.5s;
+        }
+        
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .game-question {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 20px 0;
+            padding: 25px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border: 3px solid var(--accent);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .game-visualization {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            margin: 30px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .game-number {
+            text-align: center;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 15px;
+            min-width: 200px;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+        }
+        
+        .game-number:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+        
+        .game-number .fraction-display,
+        .game-number .mixed-display {
+            margin: 10px 0;
+        }
+        
+        .game-number-title {
+            color: var(--secondary);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .game-comparison {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 0 20px;
+        }
+        
+        .game-result {
+            text-align: center;
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 20px;
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, var(--success), #4cc9f0);
+            color: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            animation: pulse 2s infinite;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .game-instructions {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: var(--light);
+            border-radius: 15px;
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-flask"></i> Бөлшектер мен аралас сандарды салыстыру</h1>
+            <p class="subtitle">5-6 сынып оқушыларына арналған виртуалды математика зертханасы</p>
+        </header>
+        
+        <div class="lab-switcher">
+            <button class="lab-btn active" data-lab="lab1">
+                <i class="fas fa-balance-scale"></i> Бөлшектерді салыстыру
+            </button>
+            <button class="lab-btn" data-lab="lab2">
+                <i class="fas fa-layer-group"></i> Аралас сандар
+            </button>
+            <button class="lab-btn" data-lab="lab3">
+                <i class="fas fa-ruler-combined"></i> Сандар сызығы
+            </button>
+            <button class="lab-btn" data-lab="lab4">
+                <i class="fas fa-gamepad"></i> Ойын режимі
+            </button>
+        </div>
+        
+        <!-- Зертхана 1: Бөлшектерді салыстыру -->
+        <div class="lab-content active" id="lab1">
+            <h2 class="lab-title"><i class="fas fa-balance-scale"></i> Бөлшектерді салыстыру</h2>
+            
+            <div class="workspace">
+                <div class="control-panel">
+                    <div class="input-group">
+                        <label><i class="fas fa-calculator"></i> Бірінші бөлшек</label>
+                        <div class="fraction-input">
+                            <input type="number" id="frac1-num" min="0" value="3" class="numerator-input">
+                            <div class="fraction-divider-input"></div>
+                            <input type="number" id="frac1-den" min="1" value="4" class="denominator-input">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label><i class="fas fa-calculator"></i> Екінші бөлшек</label>
+                        <div class="fraction-input">
+                            <input type="number" id="frac2-num" min="0" value="2" class="numerator-input">
+                            <div class="fraction-divider-input"></div>
+                            <input type="number" id="frac2-den" min="1" value="3" class="denominator-input">
+                        </div>
+                    </div>
+                    
+                    <button class="btn" id="compare-fractions">
+                        <i class="fas fa-play-circle"></i> Салыстыру
+                    </button>
+                    <button class="btn btn-accent" id="random-fractions">
+                        <i class="fas fa-random"></i> Кездейсоқ бөлшектер
+                    </button>
+                </div>
+                
+                <div class="visualization-panel">
+                    <div class="visualization">
+                        <div class="fraction-card">
+                            <h3 class="fraction-title">Бірінші бөлшек</h3>
+                            <div class="fraction-display" id="frac1-display">
+                                <div class="numerator">3</div>
+                                <div class="divider"></div>
+                                <div class="denominator">4</div>
+                            </div>
+                            <div class="circle-container">
+                                <div class="circle" id="frac1-circle"></div>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar" id="frac1-bar"></div>
+                            </div>
+                            <p class="fraction-value" id="frac1-value">3/4 = 0.75</p>
+                        </div>
+                        
+                        <div class="fraction-card">
+                            <h3 class="fraction-title">Екінші бөлшек</h3>
+                            <div class="fraction-display" id="frac2-display">
+                                <div class="numerator">2</div>
+                                <div class="divider"></div>
+                                <div class="denominator">3</div>
+                            </div>
+                            <div class="circle-container">
+                                <div class="circle" id="frac2-circle"></div>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar" id="frac2-bar"></div>
+                            </div>
+                            <p class="fraction-value" id="frac2-value">2/3 ≈ 0.667</p>
+                        </div>
+                    </div>
+                    
+                    <div class="result" id="frac-result">
+                        <div class="comparison-result">
+                            <div class="fraction-display" id="result-frac1">
+                                <div class="numerator">3</div>
+                                <div class="divider"></div>
+                                <div class="denominator">4</div>
+                            </div>
+                            <span class="math-symbol">></span>
+                            <div class="fraction-display" id="result-frac2">
+                                <div class="numerator">2</div>
+                                <div class="divider"></div>
+                                <div class="denominator">3</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="explanation">
+                <h3><i class="fas fa-lightbulb"></i> Бөлшектерді салыстыру әдістері</h3>
+                <p><strong>1. Ортақ бөлімге келтіру:</strong> Екі бөлшекті де бірдей бөлімге ие болу үшін кеңейтеміз, содан кейін алымдарын салыстырамыз.</p>
+                <p><strong>2. Ондық бөлшекке айналдыру:</strong> Әрбір бөлшекті ондық бөлшекке айналдырып, салыстырамыз.</p>
+                <p><strong>3. Өзара көбейту:</strong> Бірінші бөлшектің алымын екінші бөлшектің бөліміне, екінші бөлшектің алымын бірінші бөлшектің бөліміне көбейтеміз.</p>
+            </div>
+        </div>
+        
+        <!-- Зертхана 2: Аралас сандар -->
+        <div class="lab-content" id="lab2">
+            <h2 class="lab-title"><i class="fas fa-layer-group"></i> Аралас сандарды салыстыру</h2>
+            
+            <div class="workspace">
+                <div class="control-panel">
+                    <div class="input-group">
+                        <label><i class="fas fa-calculator"></i> Бірінші аралас сан</label>
+                        <div class="mixed-input">
+                            <input type="number" id="mixed1-whole" min="0" value="1" class="mixed-whole-input">
+                            <div class="fraction-input">
+                                <input type="number" id="mixed1-num" min="0" value="1" class="numerator-input">
+                                <div class="fraction-divider-input"></div>
+                                <input type="number" id="mixed1-den" min="1" value="2" class="denominator-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label><i class="fas fa-calculator"></i> Екінші аралас сан</label>
+                        <div class="mixed-input">
+                            <input type="number" id="mixed2-whole" min="0" value="1" class="mixed-whole-input">
+                            <div class="fraction-input">
+                                <input type="number" id="mixed2-num" min="0" value="2" class="numerator-input">
+                                <div class="fraction-divider-input"></div>
+                                <input type="number" id="mixed2-den" min="1" value="3" class="denominator-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn" id="compare-mixed">
+                        <i class="fas fa-play-circle"></i> Салыстыру
+                    </button>
+                    <button class="btn btn-accent" id="random-mixed">
+                        <i class="fas fa-random"></i> Кездейсоқ аралас сандар
+                    </button>
+                </div>
+                
+                <div class="visualization-panel">
+                    <div class="visualization">
+                        <div class="fraction-card">
+                            <h3 class="fraction-title">Бірінші аралас сан</h3>
+                            <div class="mixed-display" id="mixed1-display">
+                                <div class="whole">1</div>
+                                <div class="fraction-display">
+                                    <div class="numerator">1</div>
+                                    <div class="divider"></div>
+                                    <div class="denominator">2</div>
+                                </div>
+                            </div>
+                            <div class="whole-part" id="mixed1-whole-part">
+                                <!-- Бүтін бөлік бұл жерде қосылады -->
+                            </div>
+                            <div class="fraction-part" id="mixed1-fraction-part">
+                                <!-- Бөлшек бөлігі бұл жерде қосылады -->
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar" id="mixed1-bar"></div>
+                            </div>
+                            <p class="fraction-value" id="mixed1-value">1 1/2 = 1.5</p>
+                        </div>
+                        
+                        <div class="fraction-card">
+                            <h3 class="fraction-title">Екінші аралас сан</h3>
+                            <div class="mixed-display" id="mixed2-display">
+                                <div class="whole">1</div>
+                                <div class="fraction-display">
+                                    <div class="numerator">2</div>
+                                    <div class="divider"></div>
+                                    <div class="denominator">3</div>
+                                </div>
+                            </div>
+                            <div class="whole-part" id="mixed2-whole-part">
+                                <!-- Бүтін бөлік бұл жерде қосылады -->
+                            </div>
+                            <div class="fraction-part" id="mixed2-fraction-part">
+                                <!-- Бөлшек бөлігі бұл жерде қосылады -->
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar" id="mixed2-bar"></div>
+                            </div>
+                            <p class="fraction-value" id="mixed2-value">1 2/3 ≈ 1.667</p>
+                        </div>
+                    </div>
+                    
+                    <div class="result" id="mixed-result">
+                        <div class="comparison-result">
+                            <div class="mixed-display" id="result-mixed1">
+                                <div class="whole">1</div>
+                                <div class="fraction-display">
+                                    <div class="numerator">1</div>
+                                    <div class="divider"></div>
+                                    <div class="denominator">2</div>
+                                </div>
+                            </div>
+                            <span class="math-symbol"><</span>
+                            <div class="mixed-display" id="result-mixed2">
+                                <div class="whole">1</div>
+                                <div class="fraction-display">
+                                    <div class="numerator">2</div>
+                                    <div class="divider"></div>
+                                    <div class="denominator">3</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="steps">
+                <h3><i class="fas fa-list-ol"></i> Аралас сандарды салыстыру қадамдары</h3>
+                <ol>
+                    <li>Алдымен бүтін бөліктерді салыстырыңыз</li>
+                    <li>Егер бүтін бөліктер тең болса, бөлшек бөліктерді салыстырыңыз</li>
+                    <li>Бөлшек бөліктерді салыстыру үшін ортақ бөлімге келтіріңіз</li>
+                    <li>Алымдарын салыстырып, қайсысы үлкен екенін анықтаңыз</li>
+                </ol>
+            </div>
+        </div>
+        
+        <!-- Зертхана 3: Сандар сызығы -->
+        <div class="lab-content" id="lab3">
+            <h2 class="lab-title"><i class="fas fa-ruler-combined"></i> Сандар сызығында салыстыру</h2>
+            
+            <div class="workspace">
+                <div class="control-panel">
+                    <div class="input-group">
+                        <label><i class="fas fa-calculator"></i> Бірінші сан</label>
+                        <div class="mixed-input">
+                            <input type="number" id="line1-whole" min="0" value="1" class="mixed-whole-input">
+                            <div class="fraction-input">
+                                <input type="number" id="line1-num" min="0" value="1" class="numerator-input">
+                                <div class="fraction-divider-input"></div>
+                                <input type="number" id="line1-den" min="1" value="2" class="denominator-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label><i class="fas fa-calculator"></i> Екінші сан</label>
+                        <div class="mixed-input">
+                            <input type="number" id="line2-whole" min="0" value="1" class="mixed-whole-input">
+                            <div class="fraction-input">
+                                <input type="number" id="line2-num" min="0" value="2" class="numerator-input">
+                                <div class="fraction-divider-input"></div>
+                                <input type="number" id="line2-den" min="1" value="3" class="denominator-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn" id="place-on-line">
+                        <i class="fas fa-arrows-alt-h"></i> Сандар сызығына орналастыру
+                    </button>
+                    
+                    <div class="number-line-controls">
+                        <button class="zoom-btn" id="zoom-in">
+                            <i class="fas fa-search-plus"></i> Үлкейту
+                        </button>
+                        <button class="zoom-btn" id="zoom-out">
+                            <i class="fas fa-search-minus"></i> Кішірейту
+                        </button>
+                        <button class="zoom-btn" id="reset-view">
+                            <i class="fas fa-sync-alt"></i> Қалпына келтіру
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="visualization-panel">
+                    <h3 style="text-align: center; margin-bottom: 20px; color: var(--secondary);">
+                        <i class="fas fa-ruler-horizontal"></i> Сандар сызығы
+                        <br><small>(Сызықты жылжыту үшін басып сүйреңіз, нүктелерді жылжыту үшін нүктелерді басып сүйреңіз)</small>
+                    </h3>
+                    <div class="number-line-container" id="number-line-container">
+                        <div class="number-line-wrapper" id="number-line-wrapper">
+                            <div class="number-line" id="number-line"></div>
+                            <div class="number-line-markers" id="number-line-markers">
+                                <!-- Маркерлер бұл жерде қосылады -->
+                            </div>
+                            <!-- Нүктелер бұл жерде қосылады -->
+                        </div>
+                    </div>
+                    
+                    <div class="result" id="line-result">
+                        <div class="mixed-display" style="display: inline-flex; margin: 0 10px;">
+                            <div class="whole">1</div>
+                            <div class="fraction-display">
+                                <div class="numerator">1</div>
+                                <div class="divider"></div>
+                                <div class="denominator">2</div>
+                            </div>
+                        </div>
+                        және
+                        <div class="mixed-display" style="display: inline-flex; margin: 0 10px;">
+                            <div class="whole">1</div>
+                            <div class="fraction-display">
+                                <div class="numerator">2</div>
+                                <div class="divider"></div>
+                                <div class="denominator">3</div>
+                            </div>
+                        </div>
+                        сандары сандар сызығында көрсетілген
+                    </div>
+                </div>
+            </div>
+            
+            <div class="explanation">
+                <h3><i class="fas fa-lightbulb"></i> Сандар сызығы арқылы салыстыру</h3>
+                <p>Сандар сызығы сандарды көрнекі түрде көрсетуге мүмкіндік береді. Оң жаққа қарай сандар үлкенеді, сол жаққа қарай кішірейеді.</p>
+                <p>Бөлшектер мен аралас сандарды сандар сызығында дұрыс орналастыру үшін, оларды ондық бөлшек түрінде елестету керек.</p>
+                <p><strong>Қолдану нұсқауы:</strong> Сандар сызығын жылжыту үшін сызықты басып сүйреңіз. Нүктелерді жылжыту үшін нүктелерді басып сүйреңіз.</p>
+            </div>
+        </div>
+        
+        <!-- Зертхана 4: Ойын режимі -->
+        <div class="lab-content" id="lab4">
+            <h2 class="lab-title"><i class="fas fa-gamepad"></i> Бөлшектер ойыны</h2>
+            
+            <div class="workspace">
+                <div class="control-panel">
+                    <div class="input-group">
+                        <div class="game-question" id="game-question">
+                            <div class="comparison-result">
+                                <div class="fraction-display" id="question-frac1">
+                                    <div class="numerator">3</div>
+                                    <div class="divider"></div>
+                                    <div class="denominator">4</div>
+                                </div>
+                                <span class="game-comparison">?</span>
+                                <div class="fraction-display" id="question-frac2">
+                                    <div class="numerator">5</div>
+                                    <div class="divider"></div>
+                                    <div class="denominator">8</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-instructions">
+                        <i class="fas fa-info-circle"></i> Екі санның қайсысы үлкен екенін таңдаңыз
+                    </div>
+                    
+                    <div class="game-buttons">
+                        <button class="game-btn" id="answer-greater">
+                            <i class="fas fa-greater-than fa-2x"></i>
+                            <span>Сол жақ үлкен</span>
+                        </button>
+                        <button class="game-btn" id="answer-equal">
+                            <i class="fas fa-equals fa-2x"></i>
+                            <span>Тең</span>
+                        </button>
+                        <button class="game-btn" id="answer-less">
+                            <i class="fas fa-less-than fa-2x"></i>
+                            <span>Оң жақ үлкен</span>
+                        </button>
+                    </div>
+                    
+                    <div class="game-stats">
+                        <div class="stat">
+                            <div class="stat-value" id="game-score">0</div>
+                            <div class="stat-label">Ұпай</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="game-correct">0</div>
+                            <div class="stat-label">Дұрыс</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="game-total">0</div>
+                            <div class="stat-label">Барлығы</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-accent" id="new-game">
+                        <i class="fas fa-redo"></i> Жаңа ойын
+                    </button>
+                </div>
+                
+                <div class="visualization-panel">
+                    <div class="game-visualization">
+                        <div class="game-number">
+                            <div class="game-number-title">Бірінші сан</div>
+                            <div class="fraction-display" id="game1-display">
+                                <div class="numerator">3</div>
+                                <div class="divider"></div>
+                                <div class="denominator">4</div>
+                            </div>
+                        </div>
+                        
+                        <div class="game-comparison">?</div>
+                        
+                        <div class="game-number">
+                            <div class="game-number-title">Екінші сан</div>
+                            <div class="fraction-display" id="game2-display">
+                                <div class="numerator">5</div>
+                                <div class="divider"></div>
+                                <div class="denominator">8</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-result" id="game-result">
+                        Жауапты таңдаңыз
+                    </div>
+                </div>
+            </div>
+            
+            <div class="steps">
+                <h3><i class="fas fa-trophy"></i> Ойын ережелері</h3>
+                <ol>
+                    <li>Екі санның қайсысы үлкен екенін дұрыс анықтаңыз</li>
+                    <li>Әр дұрыс жауап үшін 10 ұпай аласыз</li>
+                    <li>Қате жауап берсеңіз, 5 ұпай жоғалады</li>
+                    <li>Жоғары ұпай жинауға тырысыңыз!</li>
+                </ol>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 Математика виртуалды зертханасы | 5-6 сынып оқушыларына арналған</p>
+        </footer>
+    </div>
+
+    <script>
+        // Зертханалар арасында ауысу
+        document.querySelectorAll('.lab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                // Барлық зертханаларды және батырмаларды жабу
+                document.querySelectorAll('.lab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.querySelectorAll('.lab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Белгіленген зертхананы ашу
+                const labId = button.getAttribute('data-lab');
+                document.getElementById(labId).classList.add('active');
+                button.classList.add('active');
+            });
+        });
+        
+        // Зертхана 1: Бөлшектерді салыстыру
+        document.getElementById('compare-fractions').addEventListener('click', compareFractions);
+        document.getElementById('random-fractions').addEventListener('click', generateRandomFractions);
+        
+        function compareFractions() {
+            const num1 = parseInt(document.getElementById('frac1-num').value);
+            const den1 = parseInt(document.getElementById('frac1-den').value);
+            const num2 = parseInt(document.getElementById('frac2-num').value);
+            const den2 = parseInt(document.getElementById('frac2-den').value);
+            
+            // Бөлім нөлге тең болмауы керек
+            if (den1 === 0 || den2 === 0) {
+                alert('Бөлім нөлге тең болмауы керек!');
+                return;
+            }
+            
+            // Алым бөлімнен үлкен болмауы керек
+            if (num1 >= den1) {
+                alert('Бірінші бөлшектің алымы бөлімінен кіші болуы керек!');
+                return;
+            }
+            
+            if (num2 >= den2) {
+                alert('Екінші бөлшектің алымы бөлімінен кіші болуы керек!');
+                return;
+            }
+            
+            const value1 = num1 / den1;
+            const value2 = num2 / den2;
+            
+            // Бөлшек сызықтарын жаңарту
+            updateFractionDisplay('frac1', num1, den1);
+            updateFractionDisplay('frac2', num2, den2);
+            
+            // Көрнекі бейнелерді жаңарту
+            document.getElementById('frac1-circle').style.setProperty('--fill-percentage', `${value1 * 100}%`);
+            document.getElementById('frac1-bar').style.setProperty('--fill-percentage', `${value1 * 100}%`);
+            document.getElementById('frac1-value').textContent = `${num1}/${den1} = ${value1.toFixed(3)}`;
+            
+            document.getElementById('frac2-circle').style.setProperty('--fill-percentage', `${value2 * 100}%`);
+            document.getElementById('frac2-bar').style.setProperty('--fill-percentage', `${value2 * 100}%`);
+            document.getElementById('frac2-value').textContent = `${num2}/${den2} = ${value2.toFixed(3)}`;
+            
+            // Нәтижені көрсету
+            updateFractionDisplay('result-frac1', num1, den1);
+            updateFractionDisplay('result-frac2', num2, den2);
+            
+            let symbol = '';
+            
+            if (value1 > value2) {
+                symbol = '>';
+            } else if (value1 < value2) {
+                symbol = '<';
+            } else {
+                symbol = '=';
+            }
+            
+            document.querySelector('#frac-result .math-symbol').textContent = symbol;
+        }
+        
+        function updateFractionDisplay(prefix, numerator, denominator) {
+            const display = document.getElementById(`${prefix}-display`);
+            if (display) {
+                display.querySelector('.numerator').textContent = numerator;
+                display.querySelector('.denominator').textContent = denominator;
+            }
+        }
+        
+        function generateRandomFractions() {
+            const den1 = Math.floor(Math.random() * 8) + 2;
+            const num1 = Math.floor(Math.random() * (den1 - 1)) + 1;
+            
+            const den2 = Math.floor(Math.random() * 8) + 2;
+            const num2 = Math.floor(Math.random() * (den2 - 1)) + 1;
+            
+            document.getElementById('frac1-num').value = num1;
+            document.getElementById('frac1-den').value = den1;
+            document.getElementById('frac2-num').value = num2;
+            document.getElementById('frac2-den').value = den2;
+            
+            compareFractions();
+        }
+        
+        // Зертхана 2: Аралас сандарды салыстыру
+        document.getElementById('compare-mixed').addEventListener('click', compareMixedNumbers);
+        document.getElementById('random-mixed').addEventListener('click', generateRandomMixedNumbers);
+        
+        function compareMixedNumbers() {
+            const whole1 = parseInt(document.getElementById('mixed1-whole').value);
+            const num1 = parseInt(document.getElementById('mixed1-num').value);
+            const den1 = parseInt(document.getElementById('mixed1-den').value);
+            const whole2 = parseInt(document.getElementById('mixed2-whole').value);
+            const num2 = parseInt(document.getElementById('mixed2-num').value);
+            const den2 = parseInt(document.getElementById('mixed2-den').value);
+            
+            // Бөлім нөлге тең болмауы керек
+            if (den1 === 0 || den2 === 0) {
+                alert('Бөлім нөлге тең болмауы керек!');
+                return;
+            }
+            
+            // Алым бөлімнен кіші болуы керек
+            if (num1 >= den1) {
+                alert('Бірінші санның алымы бөлімінен кіші болуы керек!');
+                return;
+            }
+            
+            if (num2 >= den2) {
+                alert('Екінші санның алымы бөлімінен кіші болуы керек!');
+                return;
+            }
+            
+            const value1 = whole1 + num1 / den1;
+            const value2 = whole2 + num2 / den2;
+            
+            // Аралас сандарды көрсету
+            updateMixedDisplay('mixed1', whole1, num1, den1);
+            updateMixedDisplay('mixed2', whole2, num2, den2);
+            
+            // Бүтін бөліктерді көрсету
+            updateWholeParts('mixed1', whole1);
+            updateWholeParts('mixed2', whole2);
+            
+            // Бөлшек бөліктерді көрсету
+            updateFractionParts('mixed1', num1, den1);
+            updateFractionParts('mixed2', num2, den2);
+            
+            // Бағдаршаларды жаңарту
+            document.getElementById('mixed1-bar').style.setProperty('--fill-percentage', `${(value1 / 5) * 100}%`);
+            document.getElementById('mixed2-bar').style.setProperty('--fill-percentage', `${(value2 / 5) * 100}%`);
+            
+            document.getElementById('mixed1-value').textContent = `${whole1} ${num1}/${den1} = ${value1.toFixed(3)}`;
+            document.getElementById('mixed2-value').textContent = `${whole2} ${num2}/${den2} = ${value2.toFixed(3)}`;
+            
+            // Нәтижені көрсету
+            updateMixedDisplay('result-mixed1', whole1, num1, den1);
+            updateMixedDisplay('result-mixed2', whole2, num2, den2);
+            
+            let symbol = '';
+            
+            if (value1 > value2) {
+                symbol = '>';
+            } else if (value1 < value2) {
+                symbol = '<';
+            } else {
+                symbol = '=';
+            }
+            
+            document.querySelector('#mixed-result .math-symbol').textContent = symbol;
+        }
+        
+        function updateMixedDisplay(prefix, whole, numerator, denominator) {
+            const display = document.getElementById(`${prefix}-display`);
+            if (display) {
+                display.querySelector('.whole').textContent = whole;
+                const fractionDisplay = display.querySelector('.fraction-display');
+                fractionDisplay.querySelector('.numerator').textContent = numerator;
+                fractionDisplay.querySelector('.denominator').textContent = denominator;
+            }
+        }
+        
+        function updateWholeParts(prefix, whole) {
+            const wholePart = document.getElementById(`${prefix}-whole-part`);
+            wholePart.innerHTML = '';
+            
+            for (let i = 0; i < whole; i++) {
+                const circle = document.createElement('div');
+                circle.className = 'whole-circle';
+                circle.textContent = i + 1;
+                wholePart.appendChild(circle);
+            }
+            
+            if (whole === 0) {
+                const text = document.createElement('span');
+                text.textContent = 'Бүтін бөлік жоқ';
+                text.style.fontStyle = 'italic';
+                text.style.color = '#666';
+                wholePart.appendChild(text);
+            }
+        }
+        
+        function updateFractionParts(prefix, numerator, denominator) {
+            const fractionPart = document.getElementById(`${prefix}-fraction-part`);
+            fractionPart.innerHTML = '';
+            
+            for (let i = 0; i < denominator; i++) {
+                const circle = document.createElement('div');
+                if (i < numerator) {
+                    circle.className = 'fraction-circle';
+                } else {
+                    circle.className = 'empty-circle';
+                }
+                fractionPart.appendChild(circle);
+            }
+        }
+        
+        function generateRandomMixedNumbers() {
+            const whole1 = Math.floor(Math.random() * 3);
+            const den1 = Math.floor(Math.random() * 5) + 2;
+            const num1 = Math.floor(Math.random() * (den1 - 1)) + 1;
+            
+            const whole2 = Math.floor(Math.random() * 3);
+            const den2 = Math.floor(Math.random() * 5) + 2;
+            const num2 = Math.floor(Math.random() * (den2 - 1)) + 1;
+            
+            document.getElementById('mixed1-whole').value = whole1;
+            document.getElementById('mixed1-num').value = num1;
+            document.getElementById('mixed1-den').value = den1;
+            document.getElementById('mixed2-whole').value = whole2;
+            document.getElementById('mixed2-num').value = num2;
+            document.getElementById('mixed2-den').value = den2;
+            
+            compareMixedNumbers();
+        }
+        
+        // Зертхана 3: Сандар сызығы
+        document.getElementById('place-on-line').addEventListener('click', placeOnNumberLine);
+        document.getElementById('zoom-in').addEventListener('click', zoomIn);
+        document.getElementById('zoom-out').addEventListener('click', zoomOut);
+        document.getElementById('reset-view').addEventListener('click', resetView);
+        
+        let scale = 1;
+        let translateX = 0;
+        let isDragging = false;
+        let startX, startTranslateX;
+        let activePoint = null;
+        let startPointX;
+        
+        function placeOnNumberLine() {
+            const whole1 = parseInt(document.getElementById('line1-whole').value);
+            const num1 = parseInt(document.getElementById('line1-num').value);
+            const den1 = parseInt(document.getElementById('line1-den').value);
+            const whole2 = parseInt(document.getElementById('line2-whole').value);
+            const num2 = parseInt(document.getElementById('line2-num').value);
+            const den2 = parseInt(document.getElementById('line2-den').value);
+            
+            if (den1 === 0 || den2 === 0) {
+                alert('Бөлім нөлге тең болмауы керек!');
+                return;
+            }
+            
+            // Алым бөлімнен кіші болуы керек
+            if (num1 >= den1) {
+                alert('Бірінші санның алымы бөлімінен кіші болуы керек!');
+                return;
+            }
+            
+            if (num2 >= den2) {
+                alert('Екінші санның алымы бөлімінен кіші болуы керек!');
+                return;
+            }
+            
+            const value1 = whole1 + num1 / den1;
+            const value2 = whole2 + num2 / den2;
+            
+            // Сандар сызығын жаңарту
+            updateNumberLine(value1, value2, `${whole1} ${num1}/${den1}`, `${whole2} ${num2}/${den2}`);
+            
+            // Нәтижені көрсету
+            const lineResult = document.getElementById('line-result');
+            lineResult.innerHTML = '';
+            
+            const mixed1 = document.createElement('div');
+            mixed1.className = 'mixed-display';
+            mixed1.style.display = 'inline-flex';
+            mixed1.style.margin = '0 10px';
+            mixed1.innerHTML = `
+                <div class="whole">${whole1}</div>
+                <div class="fraction-display">
+                    <div class="numerator">${num1}</div>
+                    <div class="divider"></div>
+                    <div class="denominator">${den1}</div>
+                </div>
+            `;
+            
+            const mixed2 = document.createElement('div');
+            mixed2.className = 'mixed-display';
+            mixed2.style.display = 'inline-flex';
+            mixed2.style.margin = '0 10px';
+            mixed2.innerHTML = `
+                <div class="whole">${whole2}</div>
+                <div class="fraction-display">
+                    <div class="numerator">${num2}</div>
+                    <div class="divider"></div>
+                    <div class="denominator">${den2}</div>
+                </div>
+            `;
+            
+            lineResult.appendChild(mixed1);
+            lineResult.appendChild(document.createTextNode(' және '));
+            lineResult.appendChild(mixed2);
+            lineResult.appendChild(document.createTextNode(' сандары сандар сызығында көрсетілген'));
+        }
+        
+        function updateNumberLine(value1, value2, label1, label2) {
+            const numberLineWrapper = document.getElementById('number-line-wrapper');
+            const numberLineMarkers = document.getElementById('number-line-markers');
+            
+            // Маркерлерді және нүктелерді тазалау
+            numberLineMarkers.innerHTML = '';
+            
+            // Ескі нүктелерді жою
+            document.querySelectorAll('.number-line-point').forEach(point => point.remove());
+            
+            // Маркерлерді қосу (0 ден 5-ке дейін)
+            for (let i = 0; i <= 5; i++) {
+                const marker = document.createElement('div');
+                marker.className = 'number-line-marker';
+                marker.style.left = `${i * 20}%`;
+                
+                const label = document.createElement('div');
+                label.className = 'number-line-label';
+                label.textContent = i;
+                label.style.left = `${i * 20}%`;
+                
+                numberLineMarkers.appendChild(marker);
+                numberLineMarkers.appendChild(label);
+            }
+            
+            // Сандардың нүктелерін қосу
+            addPoint(value1, label1, '#f72585', 1);
+            addPoint(value2, label2, '#4361ee', 2);
+        }
+        
+        function addPoint(value, label, color, id) {
+            const numberLineWrapper = document.getElementById('number-line-wrapper');
+            
+            const point = document.createElement('div');
+            point.className = 'number-line-point';
+            point.id = `point-${id}`;
+            point.style.left = `${value * 20}%`;
+            point.style.backgroundColor = color;
+            
+            const pointValue = document.createElement('div');
+            pointValue.className = 'number-line-point-value';
+            pointValue.textContent = label;
+            
+            point.appendChild(pointValue);
+            numberLineWrapper.appendChild(point);
+            
+            // Нүктелерді жылжыту үшін итерфейс
+            point.addEventListener('mousedown', startPointDrag);
+            point.addEventListener('touchstart', startPointDrag);
+        }
+        
+        function startPointDrag(e) {
+            e.preventDefault();
+            activePoint = e.target.closest('.number-line-point');
+            if (!activePoint) return;
+            
+            const rect = activePoint.getBoundingClientRect();
+            startPointX = (e.clientX || e.touches[0].clientX) - rect.left;
+            
+            document.addEventListener('mousemove', dragPoint);
+            document.addEventListener('touchmove', dragPoint);
+            document.addEventListener('mouseup', stopPointDrag);
+            document.addEventListener('touchend', stopPointDrag);
+        }
+        
+        function dragPoint(e) {
+            if (!activePoint) return;
+            
+            e.preventDefault();
+            const container = document.getElementById('number-line-container');
+            const containerRect = container.getBoundingClientRect();
+            
+            const clientX = e.clientX || e.touches[0].clientX;
+            const relativeX = clientX - containerRect.left;
+            
+            // Нүктенің жаңа орнын есептеу
+            let newLeft = (relativeX / containerRect.width) * 100;
+            
+            // Шектеулер (0 мен 5 арасында)
+            newLeft = Math.max(0, Math.min(100, newLeft));
+            
+            // Нүктені жылжыту
+            activePoint.style.left = `${newLeft}%`;
+            
+            // Мәнді жаңарту
+            const value = newLeft / 20;
+            const pointValue = activePoint.querySelector('.number-line-point-value');
+            
+            // Бөлшек түрінде көрсету
+            const whole = Math.floor(value);
+            const fractional = value - whole;
+            
+            let displayValue = '';
+            if (fractional === 0) {
+                displayValue = whole.toString();
+            } else {
+                // Бөлшек түрінде көрсету
+                const fraction = decimalToFraction(fractional);
+                if (whole === 0) {
+                    displayValue = `${fraction.numerator}/${fraction.denominator}`;
+                } else {
+                    displayValue = `${whole} ${fraction.numerator}/${fraction.denominator}`;
+                }
+            }
+            
+            pointValue.textContent = displayValue;
+        }
+        
+        function stopPointDrag() {
+            activePoint = null;
+            document.removeEventListener('mousemove', dragPoint);
+            document.removeEventListener('touchmove', dragPoint);
+            document.removeEventListener('mouseup', stopPointDrag);
+            document.removeEventListener('touchend', stopPointDrag);
+        }
+        
+        function decimalToFraction(decimal) {
+            // Жуықтап бөлшекке айналдыру
+            const tolerance = 1.0E-6;
+            let numerator = 1;
+            let denominator = 1;
+            let error = decimal;
+            
+            for (let d = 1; d <= 10; d++) {
+                for (let n = 0; n <= d; n++) {
+                    const currentError = Math.abs(decimal - n/d);
+                    if (currentError < error) {
+                        error = currentError;
+                        numerator = n;
+                        denominator = d;
+                    }
+                }
+            }
+            
+            return { numerator, denominator };
+        }
+        
+        // Сандар сызығын жылжыту
+        const numberLineContainer = document.getElementById('number-line-container');
+        const numberLineWrapper = document.getElementById('number-line-wrapper');
+        
+        numberLineContainer.addEventListener('mousedown', startDrag);
+        numberLineContainer.addEventListener('touchstart', startDrag);
+        
+        function startDrag(e) {
+            if (e.target.closest('.number-line-point')) return; // Нүктелерді жылжытқанда емес
+            
+            e.preventDefault();
+            isDragging = true;
+            startX = e.clientX || e.touches[0].clientX;
+            startTranslateX = translateX;
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag);
+            document.addEventListener('mouseup', stopDrag);
+            document.addEventListener('touchend', stopDrag);
+        }
+        
+        function drag(e) {
+            if (!isDragging) return;
+            
+            e.preventDefault();
+            const currentX = e.clientX || e.touches[0].clientX;
+            const deltaX = currentX - startX;
+            
+            translateX = startTranslateX + deltaX / scale;
+            
+            // Шектеулер
+            const maxTranslate = 500;
+            translateX = Math.max(-maxTranslate, Math.min(maxTranslate, translateX));
+            
+            updateNumberLineTransform();
+        }
+        
+        function stopDrag() {
+            isDragging = false;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+            document.removeEventListener('touchend', stopDrag);
+        }
+        
+        function zoomIn() {
+            scale = Math.min(3, scale * 1.2);
+            updateNumberLineTransform();
+        }
+        
+        function zoomOut() {
+            scale = Math.max(0.5, scale / 1.2);
+            updateNumberLineTransform();
+        }
+        
+        function resetView() {
+            scale = 1;
+            translateX = 0;
+            updateNumberLineTransform();
+        }
+        
+        function updateNumberLineTransform() {
+            numberLineWrapper.style.transform = `translateX(${translateX}px) scale(${scale})`;
+        }
+        
+        // Зертхана 4: Ойын режимі
+        let gameScore = 0;
+        let gameCorrect = 0;
+        let gameTotal = 0;
+        let currentGameType = 'fraction';
+        
+        document.getElementById('answer-greater').addEventListener('click', () => checkGameAnswer('greater'));
+        document.getElementById('answer-equal').addEventListener('click', () => checkGameAnswer('equal'));
+        document.getElementById('answer-less').addEventListener('click', () => checkGameAnswer('less'));
+        document.getElementById('new-game').addEventListener('click', startNewGame);
+        
+        let currentValue1, currentValue2;
+        
+        function startNewGame() {
+            gameScore = 0;
+            gameCorrect = 0;
+            gameTotal = 0;
+            updateGameStats();
+            generateGameQuestion();
+            document.getElementById('game-result').textContent = 'Жауапты таңдаңыз';
+            document.getElementById('game-result').className = 'game-result';
+            
+            // Батырмаларды қалпына келтіру
+            document.querySelectorAll('.game-btn').forEach(btn => {
+                btn.classList.remove('correct', 'incorrect');
+            });
+        }
+        
+        function generateGameQuestion() {
+            // Кездейсоқ бөлшектер немесе аралас сандарды жасау
+            currentGameType = Math.random() > 0.5 ? 'fraction' : 'mixed';
+            
+            if (currentGameType === 'fraction') {
+                const den1 = Math.floor(Math.random() * 8) + 2;
+                const num1 = Math.floor(Math.random() * (den1 - 1)) + 1;
+                
+                const den2 = Math.floor(Math.random() * 8) + 2;
+                const num2 = Math.floor(Math.random() * (den2 - 1)) + 1;
+                
+                currentValue1 = num1 / den1;
+                currentValue2 = num2 / den2;
+                
+                // Бөлшек сызықтарын жаңарту
+                updateFractionDisplay('game1', num1, den1);
+                updateFractionDisplay('game2', num2, den2);
+                updateFractionDisplay('question-frac1', num1, den1);
+                updateFractionDisplay('question-frac2', num2, den2);
+            } else {
+                const whole1 = Math.floor(Math.random() * 2);
+                const den1 = Math.floor(Math.random() * 5) + 2;
+                const num1 = Math.floor(Math.random() * (den1 - 1)) + 1;
+                
+                const whole2 = Math.floor(Math.random() * 2);
+                const den2 = Math.floor(Math.random() * 5) + 2;
+                const num2 = Math.floor(Math.random() * (den2 - 1)) + 1;
+                
+                currentValue1 = whole1 + num1 / den1;
+                currentValue2 = whole2 + num2 / den2;
+                
+                // Бөлшек сызықтарын жаңарту
+                if (whole1 > 0) {
+                    updateMixedDisplay('game1', whole1, num1, den1);
+                    updateMixedDisplay('question-frac1', whole1, num1, den1);
+                } else {
+                    updateFractionDisplay('game1', num1, den1);
+                    updateFractionDisplay('question-frac1', num1, den1);
+                }
+                
+                if (whole2 > 0) {
+                    updateMixedDisplay('game2', whole2, num2, den2);
+                    updateMixedDisplay('question-frac2', whole2, num2, den2);
+                } else {
+                    updateFractionDisplay('game2', num2, den2);
+                    updateFractionDisplay('question-frac2', num2, den2);
+                }
+            }
+        }
+        
+        function checkGameAnswer(answer) {
+            gameTotal++;
+            
+            let correctAnswer = '';
+            if (currentValue1 > currentValue2) {
+                correctAnswer = 'greater';
+            } else if (currentValue1 < currentValue2) {
+                correctAnswer = 'less';
+            } else {
+                correctAnswer = 'equal';
+            }
+            
+            const resultElement = document.getElementById('game-result');
+            const answerButtons = document.querySelectorAll('.game-btn');
+            
+            // Батырмаларды жауапқа сәйкес белгілеу
+            answerButtons.forEach(btn => {
+                btn.classList.remove('correct', 'incorrect');
+                
+                if (btn.id === 'answer-greater' && correctAnswer === 'greater') {
+                    btn.classList.add('correct');
+                } else if (btn.id === 'answer-less' && correctAnswer === 'less') {
+                    btn.classList.add('correct');
+                } else if (btn.id === 'answer-equal' && correctAnswer === 'equal') {
+                    btn.classList.add('correct');
+                } else if (
+                    (btn.id === 'answer-greater' && answer === 'greater') ||
+                    (btn.id === 'answer-less' && answer === 'less') ||
+                    (btn.id === 'answer-equal' && answer === 'equal')
+                ) {
+                    if (answer !== correctAnswer) {
+                        btn.classList.add('incorrect');
+                    }
+                }
+            });
+            
+            if (answer === correctAnswer) {
+                gameScore += 10;
+                gameCorrect++;
+                resultElement.textContent = 'Дұрыс! +10 ұпай';
+                resultElement.className = 'game-result success';
+            } else {
+                gameScore = Math.max(0, gameScore - 5);
+                resultElement.textContent = `Қате! Дұрыс жауап: ${getAnswerText(correctAnswer)}. -5 ұпай`;
+                resultElement.className = 'game-result warning';
+            }
+            
+            updateGameStats();
+            
+            // Келесі сұрақты күту
+            setTimeout(() => {
+                generateGameQuestion();
+                resultElement.textContent = 'Жауапты таңдаңыз';
+                resultElement.className = 'game-result';
+                
+                // Батырмаларды қалпына келтіру
+                answerButtons.forEach(btn => {
+                    btn.classList.remove('correct', 'incorrect');
+                });
+            }, 2000);
+        }
+        
+        function getAnswerText(answer) {
+            switch(answer) {
+                case 'greater': return 'сол жақ үлкен';
+                case 'less': return 'оң жақ үлкен';
+                case 'equal': return 'тең';
+                default: return '';
+            }
+        }
+        
+        function updateGameStats() {
+            document.getElementById('game-score').textContent = gameScore;
+            document.getElementById('game-correct').textContent = gameCorrect;
+            document.getElementById('game-total').textContent = gameTotal;
+        }
+        
+        // Бастапқы функцияларды шақыру
+        window.onload = function() {
+            compareFractions();
+            compareMixedNumbers();
+            placeOnNumberLine();
+            startNewGame();
+        };
+    </script>
+</body>
+</html>
